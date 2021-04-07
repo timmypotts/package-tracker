@@ -1,9 +1,12 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
 
 app = Flask(__name__)
+CORS(app)
 
 
 # SQLAlchemy config ========================================================
@@ -62,6 +65,28 @@ def createUser():
     db.session.commit()
 
     return jsonify({"message" : "new user created"})
+
+# USER LOGIN
+@app.route("api/auth/login")
+def userLogin():
+    auth = request.authorization
+
+    if not auth or not auth.username or not auth.password:
+        return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
+
+    user = User.query.filter_by(username=auth.username).first()
+
+# CHECK IF EXISTS
+    if not user:
+        return jsonify({"message" : "No user found"})
+
+    if check_password_hash(user.password, auth.password):
+        token = jwt.encode({"public_id" : user.public_id, app.config["SECRET_KEY"] })
+
+        return jsonify({"token" : token.decode("UTF-8")})
+
+    make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
+
 
 # PROMOTE USER TO ADMIN
 @app.route("/api/user/<user_id>", methods=["PUT"])

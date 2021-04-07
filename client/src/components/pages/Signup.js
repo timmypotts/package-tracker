@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login() {
+export default function Signup() {
   const classes = useStyles();
 
   //   Form handling
@@ -69,6 +69,28 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
+
+  function checkFields() {
+    if (password !== confirm) {
+      setError("Passwords do not match");
+      return false;
+    } else if (
+      password === "" ||
+      email === "" ||
+      username === "" ||
+      confirm === ""
+    ) {
+      setError("Please fill out every field");
+    }
+  }
+
+  function handleSubmit() {
+    console.log("========sending=============");
+    AuthService.register(username, email, password).catch((err) => {
+      console.log(err);
+    });
+  }
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -82,7 +104,7 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             Sign Up
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} onSubmit={handleSubmit} noValidate>
             <TextField
               onChange={(e) => setUsername(e.target.value)}
               variant="outlined"

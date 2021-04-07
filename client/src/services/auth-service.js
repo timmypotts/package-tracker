@@ -24,7 +24,7 @@ class AuthService {
 
   register(username, email, password) {
     return axios
-      .post("http://localhost:5432/api/auth/register", {
+      .post("http://localhost:5000/api/auth/register", {
         username,
         email,
         password,
