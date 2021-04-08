@@ -12,7 +12,7 @@ CORS(app)
 # SQLAlchemy config ========================================================
 #Token key to access enconding
 app.config["SECRET_KEY"] = "thisissecret"
-app.config["SQLALCHEMY_DATABASE_URI"] = ""
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://tim:42bUgfish42!@localhost/packagedb"
 db = SQLAlchemy(app)
 
 
@@ -67,7 +67,7 @@ def createUser():
     return jsonify({"message" : "new user created"})
 
 # USER LOGIN
-@app.route("api/auth/login")
+@app.route("/api/auth/login")
 def userLogin():
     auth = request.authorization
 
@@ -81,7 +81,7 @@ def userLogin():
         return jsonify({"message" : "No user found"})
 
     if check_password_hash(user.password, auth.password):
-        token = jwt.encode({"public_id" : user.public_id, app.config["SECRET_KEY"] })
+        token = jwt.encode({"public_id" : user.public_id, "username" : user.username}, app.config["SECRET_KEY"] )
 
         return jsonify({"token" : token.decode("UTF-8")})
 
