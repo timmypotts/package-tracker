@@ -12,7 +12,7 @@ CORS(app)
 # SQLAlchemy config ========================================================
 #Token key to access enconding
 app.config["SECRET_KEY"] = "thisissecret"
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://tim:42bUgfish42!@localhost/packagedb"
+app.config["SQLALCHEMY_DATABASE_URI"] = ""
 db = SQLAlchemy(app)
 
 

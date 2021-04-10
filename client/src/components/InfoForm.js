@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import TextField from "@material-ui/core/TextField";
-import NativeSelect from "@material-ui/core/NativeSelect";
-import InputBase from "@material-ui/core/InputBase";
+import {
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  TextField,
+  Button,
+} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -18,9 +19,13 @@ const useStyles = makeStyles((theme) => ({
   form: {
     marginTop: 3,
   },
+  button: {
+    marginTop: 6,
+    marginLeft: 10,
+  },
 }));
 
-export default function CustomizedSelects() {
+export default function InfoForm() {
   const classes = useStyles();
   const [item, setItem] = useState("");
   const handleChange = (event) => {
@@ -40,6 +45,15 @@ export default function CustomizedSelects() {
           <MenuItem value={"FedEx"}>FedEx</MenuItem>
         </Select>
       </FormControl>
+
+      <Button
+        className={classes.button}
+        size="large"
+        variant="contained"
+        color="primary"
+      >
+        Go
+      </Button>
     </form>
   );
 }

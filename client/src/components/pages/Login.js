@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -12,13 +12,14 @@ import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import AuthService from "../../services/auth-service";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
       <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+        timpotts.xyz
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(2, 1),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -61,6 +62,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const classes = useStyles();
+
+  function handleSubmit(event) {}
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -72,10 +78,12 @@ export default function Login() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Log In
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} onSubmit={handleSubmit} noValidate>
             <TextField
+              onChange={(e) => setUsername(e.target.value)}
+              value={username}
               variant="outlined"
               margin="normal"
               required
@@ -87,6 +95,8 @@ export default function Login() {
               autoFocus
             />
             <TextField
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
               variant="outlined"
               margin="normal"
               required
@@ -117,7 +127,7 @@ export default function Login() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

@@ -1,48 +1,54 @@
 import React, { useState } from "react";
 import InfoForm from "../InfoForm";
-import Container from "@material-ui/core/Container";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
+import { Container, Button, Typography, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core";
+import shipgif from "../../assets/ship.gif";
+
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles({
-  title: {
-    fontWeight: "bold",
+  spacing: {
+    marginTop: "30%",
+  },
+  gifspace: {
+    marginTop: "5%",
   },
 });
 
 export default function Home() {
   const classes = useStyles();
-  const [view, setView] = useState(false);
 
-  const toggle = () => {
-    if (view === false) {
-      setView(true);
-    } else {
-      setView(false);
-    }
-  };
   return (
-    <Container maxWidth="lg">
-      <header>
-        <Typography className={classes.title} variant="h2">
-          Trackage
-        </Typography>
-        <h3>
-          Keep track of all your packages without having to repeatedly scour
-          your inbox for that one email with the tracking number.
-        </h3>
-      </header>
-      <Button
-        size="large"
-        variant="contained"
-        onClick={toggle}
-        color="secondary"
-      >
-        + Track a Package
-      </Button>
-      <br />
-      {view ? <InfoForm /> : null}
+    <Container maxWidth="xl">
+      <Grid container spacing={0}>
+        <Grid item xs={12} md={6} lg={6}>
+          <header>
+            <Typography className={classes.spacing} variant="h2">
+              Trackage
+            </Typography>
+            <h3>
+              Keep track of all your packages without having to repeatedly scour
+              your inbox for that one email with the tracking number.
+            </h3>
+          </header>
+          <Button
+            size="large"
+            variant="contained"
+            to="/tracking"
+            color="primary"
+            component={Link}
+          >
+            + Track a Package
+          </Button>
+        </Grid>
+        <Grid item xs={0} md={6} lg={6}>
+          <img
+            className={classes.gifspace}
+            src={shipgif}
+            alt={"gif of truck"}
+          />
+        </Grid>
+      </Grid>
     </Container>
   );
 }

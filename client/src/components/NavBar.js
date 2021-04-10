@@ -2,13 +2,12 @@ import React, { useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-
+import Container from "@material-ui/core/Container";
 import AuthService from "../services/auth-service";
 import { UserContext } from "../context/UserContext";
 
-import { NavLink as RRNavLink, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,7 +17,15 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   title: {
-    flexGrow: 1,
+    fontSize: "17px",
+    color: "black",
+    paddingLeft: "5px",
+    paddingRight: "5px",
+    float: "left",
+  },
+  navItems: {
+    color: "black",
+    float: "right",
   },
 }));
 
@@ -29,54 +36,56 @@ export default function NavBar() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="static" color="white">
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
-            Trackage
-          </Typography>
-          {user ? (
-            <Button
-              style={{ color: "white" }}
-              to={`/${user}/dashboard`}
-              activeClassName="active"
-              component={Link}
-            >
-              {user}
+          <Container maxWidth="xl">
+            <Button className={classes.title} to={"/"} component={Link}>
+              Trackage
             </Button>
-          ) : (
-            <Button
-              style={{ color: "white" }}
-              to="/signup"
-              activeClassName="active"
-              component={Link}
-            >
-              Register
-            </Button>
-          )}
+            {user ? (
+              <Button
+                className={classes.navItems}
+                to={`/${user}/dashboard`}
+                activeClassName="active"
+                component={Link}
+              >
+                {user}
+              </Button>
+            ) : (
+              <Button
+                className={classes.navItems}
+                to="/signup"
+                activeClassName="active"
+                component={Link}
+              >
+                Register
+              </Button>
+            )}
 
-          {user ? (
-            <Button
-              style={{ color: "white" }}
-              to="/"
-              activeClassName="active"
-              component={Link}
-              onClick={() => {
-                AuthService.logout();
-                setUser(null);
-              }}
-            >
-              Log Out
-            </Button>
-          ) : (
-            <Button
-              style={{ color: "white" }}
-              to="/login"
-              activeClassName="active"
-              component={Link}
-            >
-              Log In
-            </Button>
-          )}
+            {user ? (
+              <Button
+                className={classes.navItems}
+                to="/"
+                activeClassName="active"
+                component={Link}
+                onClick={() => {
+                  AuthService.logout();
+                  setUser(null);
+                }}
+              >
+                Log Out
+              </Button>
+            ) : (
+              <Button
+                className={classes.navItems}
+                to="/login"
+                activeClassName="active"
+                component={Link}
+              >
+                Log In
+              </Button>
+            )}
+          </Container>
         </Toolbar>
       </AppBar>
     </div>
