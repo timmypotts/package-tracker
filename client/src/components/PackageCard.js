@@ -7,18 +7,23 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import { Map, GoogleApiWrapper, InfoWindow, Marker } from "google-maps-react";
+// import MapBox from "./Map";
+import MapHolder from "../assets/mapHolder.png";
+// import Map from "./Map";
 
 const useStyles = makeStyles({
   root: {
     maxWidth: "100%",
   },
   media: {
-    height: 140,
+    height: 350,
+  },
+  right: {
+    float: "right",
   },
 });
 
-export default function MediaCard() {
+export default function PackageCard() {
   const classes = useStyles();
 
   return (
@@ -26,10 +31,9 @@ export default function MediaCard() {
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image="/static/images/cards/contemplative-reptile.jpg"
+          image={MapHolder}
           title="Contemplative Reptile"
         />
-        {/* <Map google={this.props.google} /> */}
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
             Package Name
@@ -46,6 +50,7 @@ export default function MediaCard() {
         <Button size="small" color="primary">
           Courier
         </Button>
+        {/* <Typography className={classes.right}>Status</Typography> */}
       </CardActions>
     </Card>
   );

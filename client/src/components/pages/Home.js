@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import InfoForm from "../InfoForm";
+import React, { useState, useEffect, useContext } from "react";
 import { Container, Button, Typography, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core";
 import shipgif from "../../assets/ship.gif";
-
+import AuthService from "../../services/auth-service";
+import { UserContext } from "../../context/UserContext";
 import { Link } from "react-router-dom";
 
 const useStyles = makeStyles({
@@ -17,6 +17,16 @@ const useStyles = makeStyles({
 
 export default function Home() {
   const classes = useStyles();
+  const { user, setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+    if (user) {
+      setUser(user.username);
+    } else {
+      console.log("no user");
+    }
+  }, []);
 
   return (
     <Container maxWidth="xl">

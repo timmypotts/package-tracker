@@ -5,12 +5,13 @@ import axios from "axios";
 class AuthService {
   login(username, password) {
     return axios
-      .post("http://54.205.120.4:3080/api/auth/login", {
+      .post("http://localhost:5000/api/auth/login", {
         username,
         password,
       })
       .then((response) => {
         if (response.data.token) {
+          console.log(response);
           localStorage.setItem("user", JSON.stringify(response.data));
         }
 
@@ -30,6 +31,7 @@ class AuthService {
         password,
       })
       .then((response) => {
+        console.log(response);
         if (response.data.token) {
           localStorage.setItem("user", JSON.stringify(response.data));
         }

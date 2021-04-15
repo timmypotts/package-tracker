@@ -7,7 +7,9 @@ import {
   Select,
   TextField,
   Button,
+  Input,
 } from "@material-ui/core";
+import PackageService from "../services/package-service";
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -28,26 +30,59 @@ const useStyles = makeStyles((theme) => ({
 export default function InfoForm() {
   const classes = useStyles();
   const [item, setItem] = useState("");
-  const handleChange = (event) => {
-    setItem(event.target.value);
-  };
-  return (
-    <form className="form" noValidate autoComplete="off">
-      <TextField label="Item Name" required />
+  const [tracking, setTracking] = useState("");
+  const [courier, setCourier] = useState("");
 
-      <TextField label="Tracking Number" required />
+  function handleSubmit() {
+    console.log("========sending=============");
+    PackageService.register(item, tracking, courier).catch((err) => {
+      console.log(err);
+    });
+  }
+
+  const handleChange = (event) => {
+    setCourier(event.target.value);
+    console.log(courier);
+  };
+
+  return (
+    <form
+      className="form"
+      noValidate
+      onSubmit={handleSubmit}
+      autoComplete="off"
+    >
+      <TextField
+        label="Item Name"
+        value={item}
+        onChange={(e) => {
+          setItem(e.target.value);
+        }}
+        required
+      />
+
+      <TextField
+        label="Tracking Number"
+        value={tracking}
+        onChange={(e) => {
+          setTracking(e.target.value);
+        }}
+        required
+      />
 
       <FormControl className={classes.formControl}>
         <InputLabel>Courier</InputLabel>
-        <Select>
+        <Select name="name" value={courier} onChange={handleChange}>
           <MenuItem value={"UPS"}>UPS</MenuItem>
           <MenuItem value={"USPS"}>USPS</MenuItem>
           <MenuItem value={"FedEx"}>FedEx</MenuItem>
+          <MenuItem value={"DHL"}>DHL</MenuItem>
         </Select>
       </FormControl>
 
       <Button
         className={classes.button}
+        type="submit"
         size="large"
         variant="contained"
         color="primary"

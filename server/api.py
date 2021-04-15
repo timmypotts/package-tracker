@@ -12,14 +12,14 @@ CORS(app)
 # SQLAlchemy config ========================================================
 #Token key to access enconding
 app.config["SECRET_KEY"] = "thisissecret"
-app.config["SQLALCHEMY_DATABASE_URI"] = ""
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://tim:@localhost:5432/packagedb"
 db = SQLAlchemy(app)
 
 
 # ========== DATABASE TABLES ===============================================
 class Package(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)
+    item = db.Column(db.String(120), nullable=False)
     courier = db.Column(db.String(50), nullable=False)
     tracking = db.Column(db.String(120), unique=True, nullable=False)
     user = db.Column(db.Integer, nullable=False)
@@ -27,9 +27,10 @@ class Package(db.Model):
     shipdate = db.Column(db.DateTime, nullable=True)
     delivered =  db.Column(db.Boolean)
     deliverdate = db.Column(db.DateTime)
+    expected = db.Column(db.DateTime) 
 
     def __repr__(self):
-        return f"Package(name = {name}, tracking = {tracking}, courier = {courier}"
+        return f"Package(name = {item}, tracking = {tracking}, courier = {courier}"
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -41,20 +42,27 @@ class User(db.Model):
 
 
 # ========================== ROUTES ========================================
+
+# GET PACKAGES 
 @app.route("/api/packages", methods=["GET"])
 def getPackages():
     return ''
 
+# GET PACKAGES FOR USER
 @app.route("/api/packages/<user_id>", methods=["GET"])
 def getUserPackages():
     return ''
+
+@app.route("/api/packages/", methods=["POST"])
+def postPackage():
+    data = request.get_json(force=True)
+    print(data)
 
 
 # CREATE A USER
 @app.route("/api/auth/register", methods=["POST"])
 def createUser():
     data = request.get_json(force=True)
-    print("TESTING ==================================================")
     print(data)
     print(data["username"])
 
@@ -67,25 +75,26 @@ def createUser():
     return jsonify({"message" : "new user created"})
 
 # USER LOGIN
-@app.route("/api/auth/login")
+@app.route("/api/auth/login", methods=["POST"])
 def userLogin():
-    auth = request.authorization
+    data = request.get_json(force=True)
+    print(data)
 
-    if not auth or not auth.username or not auth.password:
+    if not data:
         return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
 
-    user = User.query.filter_by(username=auth.username).first()
+    user = User.query.filter_by(username=data["username"]).first()
 
 # CHECK IF EXISTS
     if not user:
         return jsonify({"message" : "No user found"})
 
-    if check_password_hash(user.password, auth.password):
+    if check_password_hash(user.password, data["password"]):
         token = jwt.encode({"public_id" : user.public_id, "username" : user.username}, app.config["SECRET_KEY"] )
 
-        return jsonify({"token" : token.decode("UTF-8")})
+        return jsonify({"token" : token, "username" : data["username"], "pub_id" : user.public_id})
 
-    make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
+    return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
 
 
 # PROMOTE USER TO ADMIN
