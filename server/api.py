@@ -1,18 +1,21 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
+from track import fedexTrack, uspsTrack, upsTrack
+import requests
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 # SQLAlchemy config ========================================================
 #Token key to access enconding
 app.config["SECRET_KEY"] = "thisissecret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://tim:@localhost:5432/packagedb"
+app.config['CORS_HEADERS'] = 'Content-Type'
 db = SQLAlchemy(app)
 
 
@@ -22,7 +25,7 @@ class Package(db.Model):
     item = db.Column(db.String(120), nullable=False)
     courier = db.Column(db.String(50), nullable=False)
     tracking = db.Column(db.String(120), unique=True, nullable=False)
-    user = db.Column(db.Integer, nullable=False)
+    user = db.Column(db.String(120), nullable=False)
     shipped = db.Column(db.Boolean)
     shipdate = db.Column(db.DateTime, nullable=True)
     delivered =  db.Column(db.Boolean)
@@ -54,10 +57,26 @@ def getUserPackages():
     return ''
 
 @app.route("/api/packages/", methods=["POST"])
+
 def postPackage():
     data = request.get_json(force=True)
     print(data)
+    if data["courier"] == "USPS":
+        uspsTrack(data["tracking"])
+    elif data["courier"] == "FedEx":
+        fedexTrack(data["tracking"])
+    elif data["courier"] == "UPS":
+        upsTrack(data["tracking"])
 
+
+
+    new_package = Package(item = data["item"], courier = data["courier"], tracking = data["tracking"], user = data["pubId"])
+
+
+    db.session.add(new_package)
+    db.session.commit()
+
+    return jsonify({"message" : "added package"})
 
 # CREATE A USER
 @app.route("/api/auth/register", methods=["POST"])
@@ -91,7 +110,7 @@ def userLogin():
 
     if check_password_hash(user.password, data["password"]):
         token = jwt.encode({"public_id" : user.public_id, "username" : user.username}, app.config["SECRET_KEY"] )
-
+        print("Sending response")
         return jsonify({"token" : token, "username" : data["username"], "pub_id" : user.public_id})
 
     return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})

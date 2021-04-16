@@ -72,6 +72,8 @@ export default function Login() {
   const { user, setUser } = useContext(UserContext);
 
   function handleSubmit(event) {
+    event.preventDefault();
+    console.log("SENDING");
     AuthService.login(username, password).catch((err) => {
       console.log(err);
     });

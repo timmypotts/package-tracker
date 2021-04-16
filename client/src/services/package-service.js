@@ -4,15 +4,15 @@ import authHeader from "./auth-header";
 // const API_URL = "http://localhost:3080/api/";
 
 class PackageService {
-  submitPost(item, tracking, courier, user) {
+  addPackage(item, tracking, courier, pubId) {
     return axios
       .post(
-        "http://localhost:5000/api/packages",
+        "http://localhost:5000/api/packages/",
         {
           item,
           tracking,
           courier,
-          user,
+          pubId,
         },
         { headers: authHeader() }
       )

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core";
 import {
   InputLabel,
@@ -7,9 +7,10 @@ import {
   Select,
   TextField,
   Button,
-  Input,
 } from "@material-ui/core";
 import PackageService from "../services/package-service";
+import { UserContext } from "../context/UserContext";
+import AuthService from "../services/auth-service";
 
 const useStyles = makeStyles((theme) => ({
   margin: {
@@ -32,13 +33,25 @@ export default function InfoForm() {
   const [item, setItem] = useState("");
   const [tracking, setTracking] = useState("");
   const [courier, setCourier] = useState("");
+  const [pubId, setPubId] = useState("");
+  const { user, setUser } = useContext(UserContext);
 
-  function handleSubmit() {
-    console.log("========sending=============");
-    PackageService.register(item, tracking, courier).catch((err) => {
+  function handleSubmit(event) {
+    event.preventDefault();
+    console.log(pubId);
+    PackageService.addPackage(item, tracking, courier, pubId).catch((err) => {
       console.log(err);
     });
   }
+
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+    if (user) {
+      setPubId(user.pub_id);
+    } else {
+      console.log("no user");
+    }
+  }, []);
 
   const handleChange = (event) => {
     setCourier(event.target.value);

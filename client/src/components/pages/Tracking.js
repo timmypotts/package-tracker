@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Container, Button, Typography, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core";
 import SearchBar from "material-ui-search-bar";
@@ -6,6 +6,8 @@ import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import InfoForm from "../InfoForm";
 import PackageCard from "../PackageCard";
+import { UserContext } from "../../context/UserContext";
+import AuthService from "../../services/auth-service";
 
 const useStyles = makeStyles({
   spacing: {
@@ -25,7 +27,7 @@ export default function Tracking() {
   const classes = useStyles();
 
   const [search, setSearch] = useState("");
-
+  const { user, setUser } = useContext(UserContext);
   const [view, setView] = useState(false);
 
   const toggle = () => {
@@ -36,8 +38,18 @@ export default function Tracking() {
     }
   };
 
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+    if (user) {
+      setUser(user.username);
+    } else {
+      console.log("no user");
+    }
+  }, []);
+
   return (
     <Container maxWidth="lg">
+      {/* <CheckUser /> */}
       <Grid container spacing={3}>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <header>
