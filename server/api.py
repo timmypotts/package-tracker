@@ -62,7 +62,10 @@ def postPackage():
     data = request.get_json(force=True)
     print(data)
     if data["courier"] == "USPS":
-        uspsTrack(data["tracking"])
+        res = uspsTrack(data["tracking"])
+        print("=================TEST========================")
+        print(res["status_code"])
+        print(res["tracking_number"])
     elif data["courier"] == "FedEx":
         fedexTrack(data["tracking"])
     elif data["courier"] == "UPS":
