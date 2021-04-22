@@ -72,7 +72,6 @@ export default function Login() {
   const { user, setUser } = useContext(UserContext);
 
   function handleSubmit(event) {
-    event.preventDefault();
     console.log("SENDING");
     AuthService.login(username, password).catch((err) => {
       console.log(err);
@@ -121,10 +120,6 @@ export default function Login() {
               type="password"
               id="password"
               autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
             />
             <Button
               type="submit"

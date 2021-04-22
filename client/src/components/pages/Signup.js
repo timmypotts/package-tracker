@@ -16,6 +16,7 @@ import {
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 import AuthService from "../../services/auth-service";
+import CheckUser from "../../context/CheckUser";
 
 function Copyright() {
   return (
@@ -98,6 +99,7 @@ export default function Signup() {
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
+      <CheckUser />
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>

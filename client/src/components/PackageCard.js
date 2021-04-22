@@ -14,6 +14,8 @@ import MapHolder from "../assets/mapHolder.png";
 const useStyles = makeStyles({
   root: {
     maxWidth: "100%",
+    marginTop: "20px",
+    marginBottom: "20px",
   },
   media: {
     height: 350,
@@ -23,8 +25,30 @@ const useStyles = makeStyles({
   },
 });
 
-export default function PackageCard() {
+export default function PackageCard(props) {
   const classes = useStyles();
+
+  function DisplayDate() {
+    if (props.expected !== "Invalid date") {
+      console.log(props.expected);
+      return (
+        <div>
+          <Typography variant="body2" color="textSecondary" component="p">
+            {props.status} : {props.carrierstatus}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Expected Delivery : {props.expected}
+          </Typography>
+        </div>
+      );
+    } else {
+      return (
+        <Typography variant="body2" color="textSecondary" component="p">
+          {props.status} : {props.carrierstatus}
+        </Typography>
+      );
+    }
+  }
 
   return (
     <Card className={classes.root}>
@@ -36,16 +60,17 @@ export default function PackageCard() {
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            Package Name
+            {props.item}
           </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Location
-          </Typography>
+          {/* <Typography variant="body2" color="textSecondary" component="p">
+            {props.status} : {props.deliverdate}
+          </Typography> */}
+          <DisplayDate />
         </CardContent>
       </CardActionArea>
       <CardActions>
         <Button size="small" color="primary">
-          More Info
+          {props.courier} : {props.tracking}
         </Button>
         <Button size="small" color="primary">
           Courier

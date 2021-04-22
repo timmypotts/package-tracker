@@ -8,6 +8,8 @@ import InfoForm from "../InfoForm";
 import PackageCard from "../PackageCard";
 import { UserContext } from "../../context/UserContext";
 import AuthService from "../../services/auth-service";
+import PackageService from "../../services/package-service";
+import moment from "moment";
 
 const useStyles = makeStyles({
   spacing: {
@@ -29,6 +31,7 @@ export default function Tracking() {
   const [search, setSearch] = useState("");
   const { user, setUser } = useContext(UserContext);
   const [view, setView] = useState(false);
+  const [packages, setPackages] = useState();
 
   const toggle = () => {
     if (view === false) {
@@ -38,13 +41,35 @@ export default function Tracking() {
     }
   };
 
-  useEffect(() => {
+  function loadPackages(id) {
+    PackageService.getUserPackages(id).then((res) => {
+      if (!res) {
+        console.log("error");
+        return null;
+      }
+      setPackages(res);
+    });
+  }
+
+  // JUST MAKE THE PUBLIC ID A CONTEXT VARIABLE
+  function getUser() {
     const user = AuthService.getCurrentUser();
+    console.log("2");
     if (user) {
+      console.log(user);
       setUser(user.username);
+      const pubId = user.pub_id;
+      console.log("================ID======================");
+      console.log(pubId);
+      return pubId;
     } else {
-      console.log("no user");
+      return { error: "no user" };
     }
+  }
+
+  useEffect(() => {
+    let id = getUser();
+    loadPackages(id);
   }, []);
 
   return (
@@ -103,7 +128,27 @@ export default function Tracking() {
           {view ? <InfoForm /> : null}
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-          <PackageCard />
+          {packages ? (
+            <div>
+              {packages.map((x) => (
+                <PackageCard
+                  key={x.id}
+                  postID={x.id}
+                  item={x.item}
+                  shipdate={moment(x.shipdate).calendar()}
+                  status={x.status}
+                  expected={moment(x.expected).calendar()}
+                  deliverdate={moment(x.deliverdate).calendar()}
+                  carrierstatus={x.carrierstatus}
+                  tracking={x.tracking}
+                  user={x.user}
+                  courier={x.courier}
+                />
+              ))}
+            </div>
+          ) : (
+            <h1>Loading</h1>
+          )}
         </Grid>
       </Grid>
     </Container>

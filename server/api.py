@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 from track import fedexTrack, uspsTrack, upsTrack
 import requests
+from packageSort import packageSort
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -14,7 +15,7 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 # SQLAlchemy config ========================================================
 #Token key to access enconding
 app.config["SECRET_KEY"] = "thisissecret"
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://tim:@localhost:5432/packagedb"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://tim:42bUgfish42!@localhost:5432/packagedb"
 app.config['CORS_HEADERS'] = 'Content-Type'
 db = SQLAlchemy(app)
 
@@ -22,18 +23,20 @@ db = SQLAlchemy(app)
 # ========== DATABASE TABLES ===============================================
 class Package(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.String(120), db.ForeignKey("user.public_id"), nullable=False,)
     item = db.Column(db.String(120), nullable=False)
     courier = db.Column(db.String(50), nullable=False)
     tracking = db.Column(db.String(120), unique=True, nullable=False)
-    user = db.Column(db.String(120), nullable=False)
-    shipped = db.Column(db.Boolean)
+    statuscode = db.Column(db.String(10))
+    carrierstatus = db.Column(db.String(120))
+    status = db.Column(db.String(60), nullable=True)
     shipdate = db.Column(db.DateTime, nullable=True)
-    delivered =  db.Column(db.Boolean)
     deliverdate = db.Column(db.DateTime)
+    exceptiondescription = db.Column(db.String(120))
     expected = db.Column(db.DateTime) 
 
     def __repr__(self):
-        return f"Package(name = {item}, tracking = {tracking}, courier = {courier}"
+        return f"Package(item = {self.item}, tracking = {self.tracking}, courier = {self.courier}"
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,9 +55,42 @@ def getPackages():
     return ''
 
 # GET PACKAGES FOR USER
-@app.route("/api/packages/<user_id>", methods=["GET"])
-def getUserPackages():
-    return ''
+@app.route("/api/packages/<public_id>", methods=["GET"])
+def getUserPackages(public_id):
+
+    packages = Package.query.filter_by(user=public_id).all()
+
+    if not packages:
+        return jsonify({"message" : "no packages found"})
+
+    raw = []
+
+    for package in packages:
+        package_data = {}
+        package_data["id"] = package.id
+        package_data["user"] = package.user
+        package_data["item"] = package.item
+        package_data["courier"] = package.courier
+        package_data["tracking"] = package.tracking
+        package_data["status"] = package.status
+        package_data["shipdate"] = package.shipdate
+        package_data["deliverdate"] = package.deliverdate
+        package_data["expected"] = package.expected
+        package_data["statuscode"] = package.statuscode
+        package_data["carrierstatus"] = package.carrierstatus
+        package_data["exceptiondescription"] = package.exceptiondescription
+        raw.append(package_data)
+    print(raw)
+    output = packageSort(raw)
+
+    
+
+    return jsonify({"packages" : output})
+
+
+    print(packages)
+
+    return jsonify({"packages" : packages}) 
 
 @app.route("/api/packages/", methods=["POST"])
 
@@ -63,17 +99,35 @@ def postPackage():
     print(data)
     if data["courier"] == "USPS":
         res = uspsTrack(data["tracking"])
-        print("=================TEST========================")
-        print(res["status_code"])
-        print(res["tracking_number"])
+        print(res)
+        orderStatus = res["status_description"]
+        expectedDelivery = res["estimated_delivery_date"]
+        shipDate = res["ship_date"]
+        deliveryDate = res["actual_delivery_date"]
+        statusCode = res["status_code"]
+        carrierStatus = res["carrier_status_description"]
+        exceptionDescription = res["exception_description"]
     elif data["courier"] == "FedEx":
-        fedexTrack(data["tracking"])
+        res = fedexTrack(data["tracking"])
+        orderStatus = res["status_description"]
+        expectedDelivery = res["estimated_delivery_date"]
+        shipDate = res["ship_date"]
+        deliveryDate = res["actual_delivery_date"]
+        statusCode = res["status_code"]
+        carrierStatus = res["carrier_status_description"]
+        exceptionDescription = res["exception_description"]
     elif data["courier"] == "UPS":
-        upsTrack(data["tracking"])
+        res = upsTrack(data["tracking"])
+        orderStatus = res["status_description"]
+        expectedDelivery = res["estimated_delivery_date"]
+        shipDate = res["ship_date"]
+        deliveryDate = res["actual_delivery_date"]
+        statusCode = res["status_code"]
+        carrierStatus = res["carrier_status_description"]
+        exceptionDescription = res["exception_description"]
 
 
-
-    new_package = Package(item = data["item"], courier = data["courier"], tracking = data["tracking"], user = data["pubId"])
+    new_package = Package(user = data["pubId"], item = data["item"], courier = data["courier"], tracking = data["tracking"], status = orderStatus, shipdate = shipDate, deliverdate = deliveryDate, expected = expectedDelivery, statuscode = statusCode, carrierstatus = carrierStatus, exceptiondescription = exceptionDescription)
 
 
     db.session.add(new_package)

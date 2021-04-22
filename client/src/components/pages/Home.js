@@ -41,15 +41,27 @@ export default function Home() {
               your inbox for that one email with the tracking number.
             </h3>
           </header>
-          <Button
-            size="large"
-            variant="contained"
-            to="/tracking"
-            color="primary"
-            component={Link}
-          >
-            + Track a Package
-          </Button>
+          {user ? (
+            <Button
+              size="large"
+              variant="contained"
+              to="/tracking"
+              color="primary"
+              component={Link}
+            >
+              + Track a Package
+            </Button>
+          ) : (
+            <Button
+              size="large"
+              variant="contained"
+              to="/login"
+              color="primary"
+              component={Link}
+            >
+              + Track a Package
+            </Button>
+          )}
         </Grid>
         <Grid item xs={0} md={6} lg={6}>
           <img
