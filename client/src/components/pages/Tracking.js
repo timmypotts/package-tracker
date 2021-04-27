@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Container, Button, Typography, Grid } from "@material-ui/core";
+import {
+  Container,
+  Button,
+  Typography,
+  Grid,
+  CircularProgress,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core";
 import SearchBar from "material-ui-search-bar";
 import AddIcon from "@material-ui/icons/Add";
@@ -147,7 +153,7 @@ export default function Tracking() {
               ))}
             </div>
           ) : (
-            <h1>Loading</h1>
+            <CircularProgress />
           )}
         </Grid>
       </Grid>

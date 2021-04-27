@@ -1,11 +1,18 @@
 import React, { Component } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
+import {
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Button,
+} from "@material-ui/core/";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faGithubSquare, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import USPS from "../assets/usps.png";
+import UPS from "../assets/ups.png";
+import FedEx from "../assets/fedex.png";
 import Typography from "@material-ui/core/Typography";
 // import MapBox from "./Map";
 import MapHolder from "../assets/mapHolder.png";
@@ -50,6 +57,16 @@ export default function PackageCard(props) {
     }
   }
 
+  function CourierIcon() {
+    if (props.courier === "USPS") {
+      return <img src={USPS} alt="USPS logo" width="25px" height="25px" />;
+    } else if (props.courier === "UPS") {
+      return <img src={UPS} alt="UPS logo" width="25px" height="25px" />;
+    } else if (props.courier === "FedEx") {
+      return <img src={FedEx} alt="FedEx logo" width="25px" height="25px" />;
+    }
+  }
+
   return (
     <Card className={classes.root}>
       <CardActionArea>
@@ -69,12 +86,7 @@ export default function PackageCard(props) {
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" color="primary">
-          {props.courier} : {props.tracking}
-        </Button>
-        <Button size="small" color="primary">
-          Courier
-        </Button>
+        <CourierIcon /> : {props.tracking}
         {/* <Typography className={classes.right}>Status</Typography> */}
       </CardActions>
     </Card>
