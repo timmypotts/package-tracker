@@ -1,13 +1,8 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
-import uuid
-from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
-from track import track
-import requests
-from packageSort import packageSort
 import os
+import sys
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,6 +10,10 @@ load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+port=5000
+if sys.argv.__len__() > 1:
+    port = sys.argv[1]
+print("You said port is : {} ".format(port))
 
 
 # SQLAlchemy config ========================================================
@@ -53,145 +52,20 @@ class User(db.Model):
 
 
 # ========================== ROUTES ========================================
+import packageRoutes
+import userRoutes
 
-# GET PACKAGES 
-@app.route("/api/packages", methods=["GET"])
-def getPackages():
-    return ''
-
-# GET PACKAGES FOR USER
-@app.route("/api/packages/<public_id>", methods=["GET"])
-def getUserPackages(public_id):
-
-
-    packages = Package.query.filter_by(user=public_id).all()
-    
-
-
-    if not packages:
-        return jsonify({"message" : "no packages found"})
-
-    for package in packages:
-        if package.statuscode == "DE":
-            pass
-        else:
-            res = track(package.tracking, package.courier) 
-            package.status = res["status_description"]
-            package.expected = res["estimated_delivery_date"]
-            package.shipdate = res["ship_date"]
-            package.deliverdate = res["actual_delivery_date"]
-            package.statuscode = res["status_code"]
-            package.carrierstatus = res["carrier_status_description"]
-            package.exceptiondescription = res["exception_description"]
-            db.session.commit()
-
-
-    raw = []
-
-    for package in packages:
-        package_data = {}
-        package_data["id"] = package.id
-        package_data["user"] = package.user
-        package_data["item"] = package.item
-        package_data["courier"] = package.courier
-        package_data["tracking"] = package.tracking
-        package_data["status"] = package.status
-        package_data["shipdate"] = package.shipdate
-        package_data["deliverdate"] = package.deliverdate
-        package_data["expected"] = package.expected
-        package_data["statuscode"] = package.statuscode
-        package_data["carrierstatus"] = package.carrierstatus
-        package_data["exceptiondescription"] = package.exceptiondescription
-        raw.append(package_data)
-    print(raw)
-    output = packageSort(raw)
-
-    
-
-    return jsonify({"packages" : output})
-
-
-    print(packages)
-
-    return jsonify({"packages" : packages}) 
-
-@app.route("/api/packages/", methods=["POST"])
-
-def postPackage():
-    data = request.get_json(force=True)
-    print(data)
-
-    res = track(data["tracking"], data["courier"])
-    print(res)
-    orderStatus = res["status_description"]
-    expectedDelivery = res["estimated_delivery_date"]
-    shipDate = res["ship_date"]
-    deliveryDate = res["actual_delivery_date"]
-    statusCode = res["status_code"]
-    carrierStatus = res["carrier_status_description"]
-    exceptionDescription = res["exception_description"]
-
-
-
-    new_package = Package(user = data["pubId"], item = data["item"], courier = data["courier"], tracking = data["tracking"], status = orderStatus, shipdate = shipDate, deliverdate = deliveryDate, expected = expectedDelivery, statuscode = statusCode, carrierstatus = carrierStatus, exceptiondescription = exceptionDescription)
-
-
-    db.session.add(new_package)
-    db.session.commit()
-
-    return jsonify({"message" : "added package"})
-
-# CREATE A USER
-@app.route("/api/auth/register", methods=["POST"])
-def createUser():
-    data = request.get_json(force=True)
-    print(data)
-    print(data["username"])
-
-    hashed_password = generate_password_hash(data["password"], method="sha256")
-
-    new_user = User(public_id=str(uuid.uuid4()), username=data["username"], email=data["email"], password=hashed_password, admin=False)
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({"message" : "new user created"})
-
-# USER LOGIN
-@app.route("/api/auth/login", methods=["POST"])
-def userLogin():
-    data = request.get_json(force=True)
-    print(data)
-
-    if not data:
-        return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
-
-    user = User.query.filter_by(username=data["username"]).first()
-
-# CHECK IF EXISTS
-    if not user:
-        return jsonify({"message" : "No user found"})
-
-    if check_password_hash(user.password, data["password"]):
-        token = jwt.encode({"public_id" : user.public_id, "username" : user.username}, app.config["SECRET_KEY"] )
-        print("Sending response")
-        return jsonify({"token" : token, "username" : data["username"], "pub_id" : user.public_id})
-
-    return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
-
-
-# PROMOTE USER TO ADMIN
-@app.route("/api/user/<user_id>", methods=["PUT"])
-def promoteUser():
-    return ''
-
-# DELETE USER
-@app.route("/api/user/<user_id>", methods=["DELETE"])
-def deleteUser():
-    return ''
-
+# AFTER REQUEST HOOK
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
 
 
 
 
 if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=port)
     app.run(debug=True) # true only if dev environment

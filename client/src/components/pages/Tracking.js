@@ -7,7 +7,6 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core";
-import SearchBar from "material-ui-search-bar";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import InfoForm from "../InfoForm";
@@ -15,21 +14,26 @@ import PackageCard from "../PackageCard";
 import { UserContext } from "../../context/UserContext";
 import AuthService from "../../services/auth-service";
 import PackageService from "../../services/package-service";
+import SearchIcon from "@material-ui/icons/Search";
 import moment from "moment";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   spacing: {
     marginTop: "5%",
   },
-  searchContainer: {
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
     justifyContent: "center",
   },
-  searchBar: {
-    width: "50%",
-    marginLeft: "auto",
-    marginRight: "auto",
+  inputRoot: {
+    color: "inherit",
   },
-});
+}));
 
 export default function Tracking() {
   const classes = useStyles();
@@ -97,18 +101,7 @@ export default function Tracking() {
           lg={6}
           xl={6}
           className={classes.searchContainer}
-        >
-          <SearchBar
-            onChange={(e) => setSearch(e.target.value)}
-            margin="normal"
-            className={classes.searchBar}
-            value={search}
-            name="search"
-            type="label"
-            id="label"
-            //   autoComplete="current-username"
-          />
-        </Grid>
+        ></Grid>
         <Grid item xs={4} sm={6} md={6} lg={6} xl={6}>
           {view ? (
             <Button
@@ -139,7 +132,7 @@ export default function Tracking() {
               {packages.map((x) => (
                 <PackageCard
                   key={x.id}
-                  postID={x.id}
+                  itemId={x.id}
                   item={x.item}
                   shipdate={moment(x.shipdate).calendar()}
                   status={x.status}

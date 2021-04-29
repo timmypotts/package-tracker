@@ -6,6 +6,7 @@ import {
   FormControl,
   Select,
   TextField,
+  Grid,
   Button,
 } from "@material-ui/core";
 import PackageService from "../services/package-service";
@@ -21,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     marginTop: 3,
+    minWidth: "100%",
   },
   button: {
     marginTop: 6,
@@ -71,12 +73,20 @@ export default function InfoForm() {
         onChange={(e) => {
           setItem(e.target.value);
         }}
+        style={{
+          margin: "0 auto",
+          minWidth: "20%",
+        }}
         required
       />
 
       <TextField
         label="Tracking Number"
         value={tracking}
+        style={{
+          margin: "0 auto",
+          minWidth: "25%",
+        }}
         onChange={(e) => {
           setTracking(e.target.value);
         }}
