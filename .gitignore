@@ -10,6 +10,6 @@ client/node_modules
 client/npm-debug.log*
 
 server/.env
-server/track.py
 server/tracking-api
 server/Dockerfile
+server/__pycache__
