@@ -1,6 +1,6 @@
 from __main__ import app
 from flask import Flask, request, jsonify, make_response
-from api import Package, User
+from api import Package, User, db
 from packageSort import packageSort
 from track import track
 import jwt
@@ -16,7 +16,7 @@ def getUserPackages(public_id):
 
 
     if not packages:
-        return jsonify({"message" : "no packages found"})
+        return make_response({"message" : "no packages found"})
 
     for package in packages:
         if package.statuscode == "DE":

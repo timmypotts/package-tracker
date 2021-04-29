@@ -27,19 +27,17 @@ class PackageService {
       .get("http://localhost:5000/api/packages/" + public_id)
       .then((response) => {
         var packages = response.data.packages;
-        // const sortByDate = (packages) => {
-        //   const sorter = (a, b) => {
-        //     return (
-        //       new Date(b.deliverdate).getTime() -
-        //       new Date(a.deliverdate).getTime()
-        //     );
-        //   };
-        //   packages.sort(sorter);
-        // };
-        // sortByDate(packages);
-        // console.log(packages);
         console.log(packages);
         return packages;
+      });
+  }
+
+  deletePackage(package_id) {
+    return axios
+      .delete("http://localhost:5000/api/packages/" + package_id)
+      .then((response) => {
+        console.log(response);
+        return response;
       });
   }
 }

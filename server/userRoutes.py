@@ -1,6 +1,6 @@
 from __main__ import app
 from flask import Flask, request, jsonify, make_response
-from api import Package, User
+from api import Package, User, db
 import jwt
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash

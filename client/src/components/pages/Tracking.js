@@ -41,7 +41,8 @@ export default function Tracking() {
   const [search, setSearch] = useState("");
   const { user, setUser } = useContext(UserContext);
   const [view, setView] = useState(false);
-  const [packages, setPackages] = useState();
+  const [packages, setPackages] = useState([]);
+  const [message, setMessage] = useState(null);
 
   const toggle = () => {
     if (view === false) {
@@ -54,8 +55,9 @@ export default function Tracking() {
   function loadPackages(id) {
     PackageService.getUserPackages(id).then((res) => {
       if (!res) {
+        setMessage("You are not currently tracking any packages.");
         console.log("error");
-        return null;
+        return;
       }
       setPackages(res);
     });
@@ -66,14 +68,40 @@ export default function Tracking() {
     const user = AuthService.getCurrentUser();
     console.log("2");
     if (user) {
-      console.log(user);
       setUser(user.username);
       const pubId = user.pub_id;
-      console.log("================ID======================");
-      console.log(pubId);
       return pubId;
     } else {
       return { error: "no user" };
+    }
+  }
+
+  function RenderResults() {
+    if (packages.length) {
+      return (
+        <div>
+          {packages.map((x) => (
+            <PackageCard
+              key={x.id}
+              itemId={x.id}
+              item={x.item}
+              shipdate={moment(x.shipdate).calendar()}
+              status={x.status}
+              statuscode={x.statuscode}
+              expected={moment(x.expected).calendar()}
+              deliverdate={moment(x.deliverdate).calendar()}
+              carrierstatus={x.carrierstatus}
+              tracking={x.tracking}
+              user={x.user}
+              courier={x.courier}
+            />
+          ))}
+        </div>
+      );
+    } else if (message !== null) {
+      return <h2>{message}</h2>;
+    } else {
+      return <CircularProgress />;
     }
   }
 
@@ -127,27 +155,7 @@ export default function Tracking() {
           {view ? <InfoForm /> : null}
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-          {packages ? (
-            <div>
-              {packages.map((x) => (
-                <PackageCard
-                  key={x.id}
-                  itemId={x.id}
-                  item={x.item}
-                  shipdate={moment(x.shipdate).calendar()}
-                  status={x.status}
-                  expected={moment(x.expected).calendar()}
-                  deliverdate={moment(x.deliverdate).calendar()}
-                  carrierstatus={x.carrierstatus}
-                  tracking={x.tracking}
-                  user={x.user}
-                  courier={x.courier}
-                />
-              ))}
-            </div>
-          ) : (
-            <CircularProgress />
-          )}
+          <RenderResults />
         </Grid>
       </Grid>
     </Container>

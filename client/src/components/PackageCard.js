@@ -8,12 +8,11 @@ import {
   CardMedia,
   Button,
 } from "@material-ui/core/";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faGithubSquare, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import USPS from "../assets/usps.png";
 import UPS from "../assets/ups.png";
 import FedEx from "../assets/fedex.png";
 import Typography from "@material-ui/core/Typography";
+import PackageService from "../services/package-service";
 // import MapBox from "./Map";
 import MapHolder from "../assets/mapHolder.png";
 // import Map from "./Map";
@@ -28,7 +27,11 @@ const useStyles = makeStyles({
     height: 350,
   },
   right: {
-    float: "right",
+    marginRight: "1%",
+    marginLeft: "auto",
+  },
+  left: {
+    marginLeft: "1%",
   },
 });
 
@@ -36,25 +39,44 @@ export default function PackageCard(props) {
   const classes = useStyles();
 
   function DisplayDate() {
-    if (props.expected !== "Invalid date") {
+    if (props.statuscode === "IT") {
       console.log(props.expected);
       return (
         <div>
           <Typography variant="body2" color="textSecondary" component="p">
-            {props.status} : {props.carrierstatus}
+            <span style={{ color: "yellow", fontWeight: "bold" }}>
+              {props.status}
+            </span>{" "}
+            : {props.carrierstatus}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
             Expected Delivery : {props.expected}
           </Typography>
         </div>
       );
+    } else if (props.statuscode === "DE") {
+      return (
+        <Typography variant="body2" color="textSecondary" component="p">
+          <span style={{ color: "green", fontWeight: "bold" }}>
+            {props.status}
+          </span>{" "}
+          : {props.carrierstatus}
+        </Typography>
+      );
     } else {
       return (
         <Typography variant="body2" color="textSecondary" component="p">
-          {props.status} : {props.carrierstatus}
+          <span style={{ fontWeight: "bold" }}>{props.status}</span> :{" "}
+          {props.carrierstatus}
         </Typography>
       );
     }
+  }
+
+  // Delete package function
+  function deletePackage(event) {
+    console.log("DELETING PACKAGE");
+    PackageService.deletePackage(props.itemId);
   }
 
   function CourierIcon() {
@@ -79,15 +101,18 @@ export default function PackageCard(props) {
           <Typography gutterBottom variant="h5" component="h2">
             {props.item}
           </Typography>
-          {/* <Typography variant="body2" color="textSecondary" component="p">
-            {props.status} : {props.deliverdate}
-          </Typography> */}
           <DisplayDate />
         </CardContent>
       </CardActionArea>
-      <CardActions>
-        <CourierIcon /> : {props.tracking}
-        {/* <Typography className={classes.right}>Status</Typography> */}
+      <CardActions disableSpacing>
+        <CourierIcon className={classes.left} /> : {props.tracking}
+        <Button
+          onClick={deletePackage}
+          color="secondary"
+          className={classes.right}
+        >
+          Delete
+        </Button>
       </CardActions>
     </Card>
   );

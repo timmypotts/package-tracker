@@ -39,7 +39,6 @@ export default function InfoForm() {
   const { user, setUser } = useContext(UserContext);
 
   function handleSubmit(event) {
-    event.preventDefault();
     console.log(pubId);
     PackageService.addPackage(item, tracking, courier, pubId).catch((err) => {
       console.log(err);

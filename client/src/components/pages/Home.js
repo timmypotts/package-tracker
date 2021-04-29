@@ -63,7 +63,7 @@ export default function Home() {
             </Button>
           )}
         </Grid>
-        <Grid item xs={0} md={6} lg={6}>
+        <Grid item xs={false} md={6} lg={6}>
           <img
             className={classes.gifspace}
             src={shipgif}
