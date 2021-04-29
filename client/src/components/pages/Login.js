@@ -74,9 +74,14 @@ export default function Login() {
   function handleSubmit(event) {
     event.preventDefault();
     console.log("SENDING");
-    AuthService.login(username, password).catch((err) => {
-      console.log(err);
-    });
+    AuthService.login(username, password)
+      .then((res) => {
+        console.log(res);
+        setUser(res.username);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   const [username, setUsername] = useState("");

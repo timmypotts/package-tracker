@@ -18,7 +18,9 @@ def createUser():
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({"message" : "new user created"})
+    token = jwt.encode({"public_id" : new_user.public_id, "username" : new_user.username}, app.config["SECRET_KEY"] )
+    print("Sending response")
+    return jsonify({"token" : token, "username" : new_user.username, "pub_id" : new_user.public_id})
 
 # USER LOGIN
 @app.route("/api/auth/login", methods=["POST"])

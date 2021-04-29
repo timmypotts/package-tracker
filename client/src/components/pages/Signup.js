@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Avatar,
   Button,
@@ -17,6 +17,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 import AuthService from "../../services/auth-service";
 import CheckUser from "../../context/CheckUser";
+import { UserContext } from "../../context/UserContext";
 
 function Copyright() {
   return (
@@ -74,6 +75,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
+  const { user, setUser } = useContext(UserContext);
 
   function checkFields() {
     if (password !== confirm) {
@@ -89,11 +91,17 @@ export default function Signup() {
     }
   }
 
-  function handleSubmit() {
+  function handleSubmit(event) {
+    event.preventDefault();
     console.log("========sending=============");
-    AuthService.register(username, email, password).catch((err) => {
-      console.log(err);
-    });
+    AuthService.register(username, email, password)
+      .then((res) => {
+        console.log(res);
+        setUser(res.username);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (
