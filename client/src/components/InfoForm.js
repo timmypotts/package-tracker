@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core";
 import {
   InputLabel,
@@ -6,11 +6,9 @@ import {
   FormControl,
   Select,
   TextField,
-  Grid,
   Button,
 } from "@material-ui/core";
 import PackageService from "../services/package-service";
-import { UserContext } from "../context/UserContext";
 import AuthService from "../services/auth-service";
 
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +34,6 @@ export default function InfoForm() {
   const [tracking, setTracking] = useState("");
   const [courier, setCourier] = useState("");
   const [pubId, setPubId] = useState("");
-  const { user, setUser } = useContext(UserContext);
 
   function handleSubmit(event) {
     console.log(pubId);

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -46,7 +46,6 @@ export default function NavBar() {
               <Button
                 className={classes.navItems}
                 to={`/${user}/dashboard`}
-                activeClassName="active"
                 component={Link}
               >
                 {user}
@@ -55,7 +54,6 @@ export default function NavBar() {
               <Button
                 className={classes.navItems}
                 to="/signup"
-                activeClassName="active"
                 component={Link}
               >
                 Register
@@ -66,7 +64,6 @@ export default function NavBar() {
               <Button
                 className={classes.navItems}
                 to="/"
-                activeClassName="active"
                 component={Link}
                 onClick={() => {
                   AuthService.logout();
@@ -76,12 +73,7 @@ export default function NavBar() {
                 Log Out
               </Button>
             ) : (
-              <Button
-                className={classes.navItems}
-                to="/login"
-                activeClassName="active"
-                component={Link}
-              >
+              <Button className={classes.navItems} to="/login" component={Link}>
                 Log In
               </Button>
             )}

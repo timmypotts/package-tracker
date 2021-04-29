@@ -39,7 +39,7 @@ export default function Tracking() {
   const classes = useStyles();
 
   const [search, setSearch] = useState("");
-  const { user, setUser } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const [view, setView] = useState(false);
   const [packages, setPackages] = useState([]);
   const [message, setMessage] = useState(null);
