@@ -3,17 +3,11 @@ workflows:
   version: 2
   commit:
     jobs:
-      # - test
-
       - build-frontend:
-          # requires:
-          #   - test
           context:
             - PROJECT_VARS
 
       - build-backend:
-          # requires:
-          #   - test
           context:
             - PROJECT_VARS
 
@@ -29,25 +23,6 @@ workflows:
 
 
 jobs:
-  # test:
-  #   docker:
-  #     - image: circleci/node:15.8.0
-  #       auth:
-  #         username: mydockerhub-user
-  #         password: $DOCKERHUB_PASSWORD
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: "go to client and install dependancies"
-  #         command: |
-  #           cd client/
-  #           npm i
-  #     - run:
-  #         name: "run tests"
-  #         command: |
-  #           cd client/
-  #           npm test
-
   build-frontend:
     docker:
       - image: circleci/buildpack-deps:stretch
