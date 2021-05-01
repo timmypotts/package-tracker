@@ -6,6 +6,11 @@ client/.env.production.local
 client/package-lock.json
 client/.env
 client/node_modules
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+
+
 
 client/npm-debug.log*
 

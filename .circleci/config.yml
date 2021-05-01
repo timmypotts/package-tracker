@@ -1,0 +1,28 @@
+version: 2
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - test
+
+      - build-frontend:
+          requires:
+            - test
+          context:
+            - PROJECT_VARS
+
+      - build-backend:
+          requires:
+            - test
+          context:
+            - PROJECT_VARS
+
+      - deploy:
+          requires:
+            - build-frontend
+            - build-backend
+          filters:
+            branches:
+              only: main
+          context:
+            - PROJECT_VARS
