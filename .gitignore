@@ -13,3 +13,9 @@ server/.env
 server/tracking-api
 server/Dockerfile
 server/__pycache__
+
+# testing
+client/coverage
+
+# production
+client/build
