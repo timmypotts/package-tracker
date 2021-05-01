@@ -15,7 +15,7 @@ client/npm-debug.log*
 
 server/.env
 server/tracking-api
-server/Dockerfile
+
 server/__pycache__
 
 # testing
