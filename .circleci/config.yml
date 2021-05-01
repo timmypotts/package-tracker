@@ -28,7 +28,7 @@ workflows:
             - PROJECT_VARS
 
 
-            jobs:
+jobs:
   # test:
   #   docker:
   #     - image: circleci/node:15.8.0
