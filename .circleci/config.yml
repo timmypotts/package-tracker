@@ -21,7 +21,6 @@ workflows:
           context:
             - PROJECT_VARS
 
-
 jobs:
   build-frontend:
     docker:
@@ -37,6 +36,16 @@ jobs:
       - run:
           name: "build frontend image"
           command: |
+            cd client
+            docker build -t $IMAGE_NAME:latest .
+            docker tag $IMAGE_NAME:latest timmypotts/package-tracker:$IMAGE_NAME
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+            docker push timmypotts/package-tracker:$IMAGE_NAME
+
+  build-backend:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+        auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
         environment:
