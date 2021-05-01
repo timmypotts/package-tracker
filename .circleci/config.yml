@@ -88,5 +88,4 @@ jobs:
               docker pull timmypotts/package-tracker:frontend;
               docker run -d -p 80:80 --name frontend-container timmypotts/package-tracker:frontend;"
               echo "This ran"
-
             echo "Deployment Successful"
