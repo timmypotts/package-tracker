@@ -3,17 +3,17 @@ workflows:
   version: 2
   commit:
     jobs:
-      - test
+      # - test
 
       - build-frontend:
-          requires:
-            - test
+          # requires:
+          #   - test
           context:
             - PROJECT_VARS
 
       - build-backend:
-          requires:
-            - test
+          # requires:
+          #   - test
           context:
             - PROJECT_VARS
 
@@ -23,6 +23,86 @@ workflows:
             - build-backend
           filters:
             branches:
-              only: main
+              only: master
           context:
             - PROJECT_VARS
+
+
+            jobs:
+  # test:
+  #   docker:
+  #     - image: circleci/node:15.8.0
+  #       auth:
+  #         username: mydockerhub-user
+  #         password: $DOCKERHUB_PASSWORD
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: "go to client and install dependancies"
+  #         command: |
+  #           cd client/
+  #           npm i
+  #     - run:
+  #         name: "run tests"
+  #         command: |
+  #           cd client/
+  #           npm test
+
+  build-frontend:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          IMAGE_NAME: frontend
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: "build frontend image"
+          command: |
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          IMAGE_NAME: backend
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: "build backend image"
+          command: |
+            cd server
+            docker build -t $IMAGE_NAME:latest .
+            docker tag $IMAGE_NAME:latest timmypotts/package-tracker:$IMAGE_NAME
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+            docker push timmypotts/package-tracker:$IMAGE_NAME
+
+  deploy:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - add_ssh_keys:
+          fingerprints: 96:88:a2:b6:2f:d1:48:d5:ef:52:2d:70:9b:42:86:a0
+      - run:
+          name: fix host authenticity for production server
+          command: ssh-keyscan $SECONDARY >> ~/.ssh/known_hosts
+      - run:
+          name: deploy to remote server
+          command: |
+            echo "Initiated"
+            ssh ubuntu@$SECONDARY "\
+              docker stop frontend-container;
+              docker rm frontend-container;
+              docker image rm timmypotts/package-tracker:frontend;
+              docker stop backend-container;
+              docker rm backend-container;
+              docker image rm timmypotts/package-tracker:backend;
+              docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+              docker pull timmypotts/package-tracker:backend;
+              docker run -d -p 3080:3080 --name backend-container timmypotts/package-tracker:backend;
+              docker pull timmypotts/package-tracker:frontend;
+              docker run -d -p 80:80 --name frontend-container timmypotts/package-tracker:frontend;"
+              echo "This ran"
+
+            echo "Deployment Successful"

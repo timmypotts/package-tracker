@@ -10,7 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-port=5000
+port=3080
 if sys.argv.__len__() > 1:
     port = sys.argv[1]
 print("You said port is : {} ".format(port))
@@ -36,19 +36,46 @@ class Package(db.Model):
     status = db.Column(db.String(60), nullable=True)
     shipdate = db.Column(db.DateTime, nullable=True)
     deliverdate = db.Column(db.DateTime)
-    exceptiondescription = db.Column(db.String(120))
-    expected = db.Column(db.DateTime) 
+    exceptiondescription = dserver {
 
+  listen 80;
+  server_name timpotts.xyz www.timpotts.xyz;
+
+  location / {
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+    try_files $uri $uri/ /index.html;
+  }
+
+  error_page   500 502 503 504  /50x.html;
+
+  location = /50x.html {
+    root   /usr/share/nginx/html;
+  }
+
+}
     def __repr__(self):
         return f"Package(item = {self.item}, tracking = {self.tracking}, courier = {self.courier}"
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    public_id = db.Column(db.String(50), unique=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-    admin = db.Column(db.Boolean)
+    id = db.Column(db.Integeserver {
+
+  listen 80;
+  server_name timpotts.xyz www.timpotts.xyz;
+
+  location / {
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+    try_files $uri $uri/ /index.html;
+  }
+
+  error_page   500 502 503 504  /50x.html;
+
+  location = /50x.html {
+    root   /usr/share/nginx/html;
+  }
+
+}lean)
 
 
 # ========================== ROUTES ========================================
