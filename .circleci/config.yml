@@ -37,7 +37,6 @@ jobs:
           name: "build frontend image"
           command: |
             cd client
-            npm i
             docker build -t $IMAGE_NAME:latest .
             docker tag $IMAGE_NAME:latest timmypotts/package-tracker:$IMAGE_NAME
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
