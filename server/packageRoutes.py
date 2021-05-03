@@ -29,7 +29,6 @@ def getUserPackages(public_id):
             package.exceptiondescription = res["exception_description"]
             db.session.commit()
 
-
     raw = []
 
     for package in packages:
