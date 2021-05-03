@@ -70,7 +70,7 @@ jobs:
           fingerprints: 40:4d:d5:25:6d:8b:ce:f9:e0:39:7e:f6:e7:99:8c:63
       - run:
           name: fix host authenticity for production server
-          command: ssh-keyscan -vvv $SECONDARY >> ~/.ssh/known_hosts
+          command: ssh-keyscan $SECONDARY >> ~/.ssh/known_hosts
       - run:
           name: deploy to remote server
           command: |
