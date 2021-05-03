@@ -15,7 +15,6 @@ if sys.argv.__len__() > 1:
     port = sys.argv[1]
 print("You said port is : {} ".format(port))
 
-
 # SQLAlchemy config ========================================================
 #Token key to access enconding
 app.config["SECRET_KEY"] = "thisissecret"
