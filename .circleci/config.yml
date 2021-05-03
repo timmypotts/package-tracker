@@ -84,7 +84,7 @@ jobs:
               docker image rm timmypotts/package-tracker:backend;
               docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
               docker pull timmypotts/package-tracker:backend;
-              docker run -d -p 3080:3080 --name backend-container timmypotts/package-tracker:backend;
+              docker run -d -p 3080:3080 -e POSTGRES_API_URL=postgresql://tim:42bUgfish42!@54.205.120.4:5432/packagedb -e SHIPENGINE_API_KEY=0Xvj1Rf1EUlzR4Q/4ef0K1e5S98yOg1BfinT6OkphFw --name backend-container timmypotts/package-tracker:backend;
               docker pull timmypotts/package-tracker:frontend;
               docker run -d -p 80:80 --name frontend-container timmypotts/package-tracker:frontend;"
               echo "This ran"
