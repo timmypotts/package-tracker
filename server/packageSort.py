@@ -41,6 +41,8 @@ def packageSort(array):
     categories["exception"].sort(key=getExpected, reverse=True)
     categories["attempt"].sort(key=getExpected, reverse=True)
 
+
+
     for category in categories:
         for i in categories[category]:
             output.append(i)
