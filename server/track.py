@@ -7,7 +7,6 @@ load_dotenv()
 
 key = os.environ.get("SHIPENGINE_API_KEY")
 
-
 def track(tracking, carrier):
     carrier = carrier.lower()
 
