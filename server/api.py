@@ -23,6 +23,8 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 db = SQLAlchemy(app)
 
 
+
+
 # ========== DATABASE TABLES ===============================================
 class Package(db.Model):
     id = db.Column(db.Integer, primary_key=True)
