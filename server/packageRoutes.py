@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 @app.route("/api/packages/<public_id>", methods=["GET"])
 def getUserPackages(public_id):
 
-
     packages = Package.query.filter_by(user=public_id).all()
     
     if not packages:
