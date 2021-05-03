@@ -50,7 +50,6 @@ def getUserPackages(public_id):
     output = packageSort(raw)
 
     
-
     return jsonify({"packages" : output})
 
     print(packages)
