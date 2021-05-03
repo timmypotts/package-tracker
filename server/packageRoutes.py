@@ -53,7 +53,6 @@ def getUserPackages(public_id):
 
     return jsonify({"packages" : output})
 
-
     print(packages)
 
     return jsonify({"packages" : packages}) 
