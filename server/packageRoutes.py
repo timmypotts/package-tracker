@@ -13,8 +13,6 @@ def getUserPackages(public_id):
 
     packages = Package.query.filter_by(user=public_id).all()
     
-
-
     if not packages:
         return make_response({"message" : "no packages found"})
 
