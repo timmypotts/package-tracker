@@ -87,5 +87,4 @@ jobs:
               docker run -d -p 3080:3080 -e POSTGRES_API_URL=$PACKAGE_DB_URL -e SHIPENGINE_API_KEY=$SHIPENGINE_API_KEY --name backend-container timmypotts/package-tracker:backend;
               docker pull timmypotts/package-tracker:frontend;
               docker run -d -p 80:80 --name frontend-container timmypotts/package-tracker:frontend;"
-              echo "This ran"
             echo "Deployment Successful"
