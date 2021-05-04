@@ -37,6 +37,9 @@ class Package(db.Model):
     status = db.Column(db.String(60), nullable=True)
     shipdate = db.Column(db.DateTime, nullable=True)
     deliverdate = db.Column(db.DateTime)
+    exceptiondescription = db.Column(db.String(120))
+    expected = db.Column(db.DateTime) 
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

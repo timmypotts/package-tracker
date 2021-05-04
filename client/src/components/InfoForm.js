@@ -94,7 +94,6 @@ export default function InfoForm() {
           <MenuItem value={"UPS"}>UPS</MenuItem>
           <MenuItem value={"USPS"}>USPS</MenuItem>
           <MenuItem value={"FedEx"}>FedEx</MenuItem>
-          <MenuItem value={"DHL"}>DHL</MenuItem>
         </Select>
       </FormControl>
 
