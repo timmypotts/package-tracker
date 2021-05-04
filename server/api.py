@@ -39,24 +39,13 @@ class Package(db.Model):
     deliverdate = db.Column(db.DateTime)
 
 class User(db.Model):
-    id = db.Column(db.Integeserver {
+    id = db.Column(db.Integer, primary_key=True)
+    public_id = db.Column(db.String(50), unique=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    admin = db.Column(db.Boolean)
 
-  listen 80;
-  server_name timpotts.xyz www.timpotts.xyz;
-
-  location / {
-    root   /usr/share/nginx/html;
-    index  index.html index.htm;
-    try_files $uri $uri/ /index.html;
-  }
-
-  error_page   500 502 503 504  /50x.html;
-
-  location = /50x.html {
-    root   /usr/share/nginx/html;
-  }
-
-}lean)
 
 
 # ========================== ROUTES ========================================
