@@ -17,7 +17,7 @@ FROM nginx:stable-alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
 
-# COPY nginx/nginx.conf /etc/nginx/conf.d/
+COPY nginx/nginx.conf /etc/nginx/conf.d/
 # COPY ssl/certificate.crt /etc/ssl/certificate.crt;
 # COPY ssl/private.key /etc/ssl/private.key;
 EXPOSE 80
