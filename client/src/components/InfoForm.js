@@ -36,7 +36,7 @@ export default function InfoForm() {
   const [pubId, setPubId] = useState("");
 
   function handleSubmit(event) {
-    console.log(pubId);
+    event.preventDefault();
     PackageService.addPackage(item, tracking, courier, pubId).catch((err) => {
       console.log(err);
     });
@@ -53,7 +53,6 @@ export default function InfoForm() {
 
   const handleChange = (event) => {
     setCourier(event.target.value);
-    console.log(courier);
   };
 
   return (

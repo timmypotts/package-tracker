@@ -56,7 +56,6 @@ export default function Tracking() {
     PackageService.getUserPackages(id).then((res) => {
       if (!res) {
         setMessage("You are not currently tracking any packages.");
-        console.log("error");
         return;
       }
       setPackages(res);
