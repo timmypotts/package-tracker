@@ -44,7 +44,7 @@ export default function PackageCard(props) {
       return (
         <div>
           <Typography variant="body2" color="textSecondary" component="p">
-            <span style={{ color: "yellow", fontWeight: "bold" }}>
+            <span style={{ color: "orange", fontWeight: "bold" }}>
               {props.status}
             </span>{" "}
             : {props.carrierstatus}
