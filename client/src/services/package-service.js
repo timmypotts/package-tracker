@@ -7,7 +7,7 @@ class PackageService {
   addPackage(item, tracking, courier, pubId) {
     return axios
       .post(
-        "http://localhost:5000/api/packages/",
+        "http://54.164.112.2:3080/api/packages/",
         {
           item,
           tracking,
@@ -24,7 +24,7 @@ class PackageService {
 
   getUserPackages(public_id) {
     return axios
-      .get("http://localhost:5000/api/packages/" + public_id)
+      .get("http://54.164.112.2:3080/api/packages/" + public_id)
       .then((response) => {
         var packages = response.data.packages;
         console.log(packages);
@@ -34,7 +34,7 @@ class PackageService {
 
   deletePackage(package_id) {
     return axios
-      .delete("http://localhost:5000/api/packages/" + package_id)
+      .delete("http://54.164.112.2:3080/api/packages/" + package_id)
       .then((response) => {
         console.log(response);
         return response;

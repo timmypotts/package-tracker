@@ -5,7 +5,7 @@ import axios from "axios";
 class AuthService {
   login(username, password) {
     return axios
-      .post("http://127.0.0.1:5000/api/auth/login", {
+      .post("http://54.164.112.2:3080/api/auth/login", {
         username,
         password,
       })
@@ -25,7 +25,7 @@ class AuthService {
 
   register(username, email, password) {
     return axios
-      .post("http://localhost:5000/api/auth/register", {
+      .post("http://54.164.112.2:3080/api/auth/register", {
         username,
         email,
         password,
