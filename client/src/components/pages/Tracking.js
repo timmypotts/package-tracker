@@ -65,7 +65,7 @@ export default function Tracking() {
   // JUST MAKE THE PUBLIC ID A CONTEXT VARIABLE
   function getUser() {
     const user = AuthService.getCurrentUser();
-    console.log("2");
+
     if (user) {
       setUser(user.username);
       const pubId = user.pub_id;

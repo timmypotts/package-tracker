@@ -36,10 +36,13 @@ export default function InfoForm() {
   const [pubId, setPubId] = useState("");
 
   function handleSubmit(event) {
-    event.preventDefault();
-    PackageService.addPackage(item, tracking, courier, pubId).catch((err) => {
-      console.log(err);
-    });
+    PackageService.addPackage(item, tracking, courier, pubId)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   useEffect(() => {
