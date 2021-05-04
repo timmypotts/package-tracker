@@ -1,4 +1,4 @@
-from __main__ import app
+from api import app
 from flask import Flask, request, jsonify, make_response
 from api import Package, User, db
 from packageSort import packageSort
