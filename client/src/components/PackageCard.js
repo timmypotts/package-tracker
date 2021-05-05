@@ -76,7 +76,10 @@ export default function PackageCard(props) {
   // Delete package function
   function deletePackage(event) {
     console.log("DELETING PACKAGE");
-    PackageService.deletePackage(props.itemId);
+    PackageService.deletePackage(props.itemId).then((res) => {
+      console.log(res);
+      window.location.reload();
+    });
   }
 
   function CourierIcon() {
