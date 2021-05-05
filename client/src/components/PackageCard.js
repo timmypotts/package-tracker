@@ -50,7 +50,8 @@ export default function PackageCard(props) {
             : {props.carrierstatus}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            Expected Delivery : {props.expected}
+            <span style={{ fontWeight: "bold" }}>Expected Delivery : </span>{" "}
+            {props.expected}
           </Typography>
         </div>
       );
