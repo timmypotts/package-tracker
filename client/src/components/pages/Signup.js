@@ -88,11 +88,13 @@ export default function Signup() {
       confirm === ""
     ) {
       setError("Please fill out every field");
+      return false;
     }
   }
 
   function handleSubmit(event) {
     event.preventDefault();
+    checkFields();
     console.log("========sending=============");
     AuthService.register(username, email, password)
       .then((res) => {

@@ -87,7 +87,7 @@ export default function Tracking() {
               shipdate={moment(x.shipdate).calendar()}
               status={x.status}
               statuscode={x.statuscode}
-              expected={moment(x.expected).calendar()}
+              expected={moment(x.expected).format("dddd MMM Do")}
               deliverdate={moment(x.deliverdate).calendar()}
               carrierstatus={x.carrierstatus}
               tracking={x.tracking}
