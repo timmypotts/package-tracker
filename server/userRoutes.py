@@ -4,22 +4,24 @@ from api import Package, User, db
 import jwt
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from sqlalchemy.exc import IntegrityError
 
 
 # CREATE A USER
 @app.route("/api/auth/register", methods=["POST"])
 def createUser():
     data = request.get_json(force=True)
-    exists = User.query.filter_by(uniq=data["username"]).first()
-    if exists:
-        return make_response("User already exists", 409)
 
     hashed_password = generate_password_hash(data["password"], method="sha256")
 
-    new_user = User(public_id=str(uuid.uuid4()), username=data["username"], email=data["email"], password=hashed_password, admin=False)
-    db.session.add(new_user)
-    db.session.commit()
+    try:
+
+        new_user = User(public_id=str(uuid.uuid4()), username=data["username"], email=data["email"], password=hashed_password, admin=False)
+        db.session.add(new_user)
+        db.session.commit()
+    except IntegrityError:
+        db.error.rollback()
+        return make_response("User already exists", 409)
 
     token = jwt.encode({"public_id" : new_user.public_id, "username" : new_user.username}, app.config["SECRET_KEY"] )
     print("Sending response")
