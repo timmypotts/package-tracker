@@ -5,12 +5,15 @@ import jwt
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
+
 # CREATE A USER
 @app.route("/api/auth/register", methods=["POST"])
 def createUser():
     data = request.get_json(force=True)
-    print(data)
-    print(data["username"])
+    exists = User.query.filter_by(uniq=data["username"]).first()
+    if exists:
+        return make_response("User already exists", 409)
 
     hashed_password = generate_password_hash(data["password"], method="sha256")
 
@@ -22,6 +25,8 @@ def createUser():
     print("Sending response")
     return jsonify({"token" : token, "username" : new_user.username, "pub_id" : new_user.public_id})
 
+
+
 # USER LOGIN
 @app.route("/api/auth/login", methods=["POST"])
 def userLogin():
@@ -32,6 +37,8 @@ def userLogin():
         return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
 
     user = User.query.filter_by(username=data["username"]).first()
+
+
 
 # CHECK IF EXISTS
     if not user:

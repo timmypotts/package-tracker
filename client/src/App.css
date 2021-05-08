@@ -32,11 +32,12 @@
   margin-top: 15px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+.gif-view {
+  margin-top: 5px;
+}
+
+@media only screen and (max-width: 660px) {
+  .gif-view {
+    display: none;
   }
 }

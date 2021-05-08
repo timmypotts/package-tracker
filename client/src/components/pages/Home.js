@@ -64,11 +64,7 @@ export default function Home() {
           )}
         </Grid>
         <Grid item xs={false} md={6} lg={6}>
-          <img
-            className={classes.gifspace}
-            src={shipgif}
-            alt={"gif of truck"}
-          />
+          <img className="gif-view" src={shipgif} alt={"gif of truck"} />
         </Grid>
       </Grid>
     </Container>

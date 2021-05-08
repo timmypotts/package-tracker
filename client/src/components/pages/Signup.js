@@ -4,8 +4,6 @@ import {
   Button,
   CssBaseline,
   TextField,
-  FormControlLabel,
-  Checkbox,
   Link,
   Paper,
   Box,
@@ -37,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
   },
   image: {
-    backgroundImage: "url(https://source.unsplash.com/random)",
+    backgroundImage: "url(https://source.unsplash.com/uBe2mknURG4/)",
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"
@@ -63,6 +61,9 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  error: {
+    color: "red",
+  },
 }));
 
 export default function Signup() {
@@ -76,6 +77,7 @@ export default function Signup() {
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
   const { user, setUser } = useContext(UserContext);
+  const [submitting, setSubmitting] = useState(false);
 
   function checkFields() {
     if (password !== confirm) {
@@ -93,17 +95,25 @@ export default function Signup() {
   }
 
   function handleSubmit(event) {
+    setSubmitting(true);
     event.preventDefault();
-    checkFields();
-    console.log("========sending=============");
-    AuthService.register(username, email, password)
-      .then((res) => {
-        console.log(res);
-        setUser(res.username);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    let valid = checkFields();
+    if (valid === false) {
+      setSubmitting(false);
+      console.log("this");
+      return;
+    } else {
+      console.log("========sending=============");
+      AuthService.register(username, email, password)
+        .then((res) => {
+          console.log(res);
+          setUser(res.username);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -126,7 +136,6 @@ export default function Signup() {
               margin="normal"
               required
               fullWidth
-              value={username}
               name="username"
               label="Username"
               type="username"
@@ -172,9 +181,11 @@ export default function Signup() {
               id="password-confirm"
               autoComplete="current-password"
             />
+            {error ? <p className={classes.error}>{error}</p> : null}
             <Button
               type="submit"
               fullWidth
+              disabled={submitting}
               variant="contained"
               color="primary"
               className={classes.submit}
