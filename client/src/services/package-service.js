@@ -1,13 +1,14 @@
 import axios from "axios";
 import authHeader from "./auth-header";
+import { config } from "../Constants";
 
-// const API_URL = "http://localhost:3080/api/";
+const API_URL = config.url.API_URL;
 
 class PackageService {
   addPackage(item, tracking, courier, pubId) {
     return axios
       .post(
-        "http://52.72.142.224:3080/api/packages/",
+        API_URL + "/api/packages/",
         {
           item,
           tracking,
@@ -24,7 +25,7 @@ class PackageService {
 
   getUserPackages(public_id) {
     return axios
-      .get("http://52.72.142.224:3080/api/packages/" + public_id)
+      .get(API_URL + "/api/packages/" + public_id)
       .then((response) => {
         var packages = response.data.packages;
         console.log(packages);
@@ -34,7 +35,7 @@ class PackageService {
 
   deletePackage(package_id) {
     return axios
-      .delete("http://52.72.142.224:3080/api/packages/" + package_id)
+      .delete(API_URL + "/api/packages/" + package_id)
       .then((response) => {
         console.log(response);
         return response;
