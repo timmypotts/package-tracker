@@ -15,12 +15,11 @@ def createUser():
     hashed_password = generate_password_hash(data["password"], method="sha256")
 
     try:
-
         new_user = User(public_id=str(uuid.uuid4()), username=data["username"], email=data["email"], password=hashed_password, admin=False)
         db.session.add(new_user)
         db.session.commit()
     except IntegrityError:
-        db.error.rollback()
+        db.session.rollback()
         return make_response("User already exists", 409)
 
     token = jwt.encode({"public_id" : new_user.public_id, "username" : new_user.username}, app.config["SECRET_KEY"] )
