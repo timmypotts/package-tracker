@@ -4,9 +4,6 @@ from flask_cors import CORS, cross_origin
 import os
 import sys
 from dotenv import load_dotenv
-# ========================== ROUTES ========================================
-import packageRoutes
-import userRoutes
 
 load_dotenv()
 
@@ -54,7 +51,9 @@ class User(db.Model):
 
 
 
-
+# ========================== ROUTES ========================================
+import packageRoutes
+import userRoutes
 
 # AFTER REQUEST HOOK
 @app.after_request

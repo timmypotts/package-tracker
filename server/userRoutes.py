@@ -38,11 +38,9 @@ def userLogin():
 
     user = User.query.filter_by(username=data["username"]).first()
 
-
-
 # CHECK IF EXISTS
     if not user:
-        return jsonify({"message" : "No user found"})
+        return make_response("User does not exist", 404)
 
     if check_password_hash(user.password, data["password"]):
         token = jwt.encode({"public_id" : user.public_id, "username" : user.username}, app.config["SECRET_KEY"] )
