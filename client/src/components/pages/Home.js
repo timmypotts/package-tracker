@@ -24,7 +24,6 @@ export default function Home() {
     if (user) {
       setUser(user.username);
     } else {
-      console.log(process.env.NODE_ENV);
       console.log("no user");
     }
   }, []);

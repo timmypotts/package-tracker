@@ -110,6 +110,7 @@ export default function Signup() {
           setUser(res.username);
         })
         .catch((err) => {
+          console.log(err.status);
           console.log(err);
         });
       setSubmitting(false);
