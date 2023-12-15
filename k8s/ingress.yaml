@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.class: "gce-internal"
+    kubernetes.io/ingress.allow-http: "false"
+spec:
+  tls:
+  - secretName: tim.domain.net.cert
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: web-service
+            port:
+              number: 80
+        path: /*
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: api-service
+            port:
+              number: 3000
+        path: /twirp/*
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: api-service
+            port:
+              number: 3000
+        path: /auth/*
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: api-service
+            port:
+              number: 3000
+        path: /api/*
+        pathType: ImplementationSpecific

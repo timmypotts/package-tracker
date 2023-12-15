@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: api
+  template:
+    metadata:
+      labels:
+        component: api
+    spec:
+      volumes:
+        - name: service-account
+          secret:
+            defaultMode: 420
+            secretName: service-account
+      containers:
+        - name: api
+          image: us-central-docker.pkg.dev/PROJECTNAME/directory/api:$TAG_NAME
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PG_HOST
+              vale: "127.0.0.1"
+            - name: PG_PORT
+              vale: "5432"
+
+        - name: cloud-sql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.22.0
+          command:
+            - /cloud_sql_proxy
+            - -instances=PROJECTNAME:REGION:db-name=tcp:5432
+            - -credential_file=/keys/service-account.json
+          volumeMounts:
+            - mountPath: /keys/
+              name: service-account
+              readOnly: true
+          securityContext:
+            runAsNonRoot: true
+          

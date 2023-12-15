@@ -4,7 +4,7 @@ client/.env.development.local
 client/.env.test.local
 client/.env.production.local
 client/.env
-client/node_modules
+/node_modules
 client/npm-debug.log*
 client/yarn-debug.log*
 client/yarn-error.log*
@@ -19,7 +19,7 @@ server/tracking-api
 server/__pycache__
 
 # testing
-client/coverage
+/coverage
 
 # production
-client/build
+/build

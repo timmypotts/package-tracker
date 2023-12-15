@@ -1,0 +1,48 @@
+version: "3"
+services:
+  nginx:
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile.dev
+    ports:
+      - "127.0.0.1:9003:8000"
+    depends_on:
+      - web
+      - api
+  
+  web:
+    build:
+      context: ./services/web-react
+      dockerfile: Dockerfile.dev
+    volumes:
+      - "./services/web-react/app:/app"
+    environment:
+      - PORT=8080
+
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:3006:3000"
+    volumes:
+      - ./services/api:/app
+      - ./keys/sa-key.json:/keys/sa-key.json:ro
+    environment:
+      PG_HOST: db
+      PG_PORT: "5432"
+      PG_USER: postgres
+      PG_PASSWORD: postgres
+      PG_SSLMODE: disable
+  
+  db:
+    image: postgres:11.8
+    ports:
+      - "127.0.0.1:5456:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+

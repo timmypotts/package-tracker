@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: web
+  template:
+    metadata:
+      labels:
+        component: web
+    spec:
+      containers:
+        - name: web
+          image: us-central1-docker.pkg.dev/PROJECTNAME/directory/web-react:$TAG_NAME
+          ports:
+            - containerPort: 80
+          env:
+            - name: APP_APPLE_CLIENT_ID
+              value: apple.id.code
