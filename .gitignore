@@ -4,7 +4,8 @@ client/.env.development.local
 client/.env.test.local
 client/.env.production.local
 client/.env
-/node_modules
+node_modules/
+package-lock.json
 client/npm-debug.log*
 client/yarn-debug.log*
 client/yarn-error.log*
@@ -22,4 +23,4 @@ server/__pycache__
 /coverage
 
 # production
-/build
+build/

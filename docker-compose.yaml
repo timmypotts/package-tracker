@@ -23,7 +23,7 @@ services:
   api:
     build:
       context: ./services/api
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     depends_on:
       - db
     ports:
@@ -37,6 +37,7 @@ services:
       PG_USER: postgres
       PG_PASSWORD: postgres
       PG_SSLMODE: disable
+      POSTGRES_API_URL: postgresql://postgres:postgres@db:5432/postgres?sslmode=disable
   
   db:
     image: postgres:11.8
