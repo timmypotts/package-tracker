@@ -27,6 +27,15 @@ def createUser():
     print("Sending response")
     return jsonify({"token" : token, "username" : new_user.username, "pub_id" : new_user.public_id})
 
+@app.route('/api/auth/register', methods=['OPTIONS'])
+def handle_options():
+    response = make_response()
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type')
+    response.headers.add('Access-Control-Max-Age', '1728000')
+    return response
+
 
 
 # USER LOGIN

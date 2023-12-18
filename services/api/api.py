@@ -10,7 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, resources={"/api/*": {"origins": "*"}})
-por
+port = 3080
 if sys.argv.__len__() > 1:
     port = sys.argv[1]
 print("You said port is : {} ".format(port))
@@ -56,12 +56,11 @@ class User(db.Model):
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers',
-                         'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=port)
-    app.run(debug=True)  # true only if dev environment
+    app.run(host="0.0.0.0", port=port, debug=True)
+    # app.run(debug=True)  # true only if dev environment
