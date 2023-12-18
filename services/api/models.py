@@ -1,6 +1,9 @@
-from api import db
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSON
 
+
+db = SQLAlchemy()
+# ========== DATABASE TABLES ===============================================
 class Package(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(120), db.ForeignKey("user.public_id"), nullable=False,)
@@ -18,7 +21,7 @@ class Package(db.Model):
     def __repr__(self):
         return f"Package(item = {self.item}, tracking = {self.tracking}, courier = {self.courier}"
 
-class User(db.Model):
+class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -27,5 +30,6 @@ class User(db.Model):
     admin = db.Column(db.Boolean)
 
     def __repr__(self):
-        return f"User( username = {username}"
+        return f"Users( username = {username}"
+
 

@@ -1,13 +1,13 @@
-from api import app
-from flask import Flask, request, jsonify, make_response
-from api import Package, User, db
+from flask import Blueprint, request, jsonify, make_response
+from models import Package, Users, db
 from packageSort import packageSort
 from track import track
-import jwt
 from dotenv import load_dotenv
 
+package_blueprint = Blueprint('package_blueprint', __name__)
+
 # GET PACKAGES FOR USER
-@app.route("/api/packages/<public_id>", methods=["GET"])
+@package_blueprint.route("/api/packages/<public_id>", methods=["GET"])
 def getUserPackages(public_id):
 
     packages = Package.query.filter_by(user=public_id).all()
@@ -56,7 +56,7 @@ def getUserPackages(public_id):
 
     return jsonify({"packages" : packages}) 
 
-@app.route("/api/packages/", methods=["POST"])
+@package_blueprint.route("/api/packages/", methods=["POST"])
 
 def postPackage():
     data = request.get_json(force=True)
@@ -83,7 +83,7 @@ def postPackage():
     return jsonify({"message" : "added package"})
 
 # DELETE PACKAGE
-@app.route("/api/packages/<package_id>", methods=["DELETE"])
+@package_blueprint.route("/api/packages/<package_id>", methods=["DELETE"])
 def deletePackage(package_id):
     db.session.query(Package).filter(Package.id==package_id).delete()
     db.session.commit()

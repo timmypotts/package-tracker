@@ -5,7 +5,8 @@ client/.env.test.local
 client/.env.production.local
 client/.env
 node_modules/
-__pycache__/
+services/api/__pycache__/
+services/api/__pycache__/*
 package-lock.json
 client/npm-debug.log*
 client/yarn-debug.log*
