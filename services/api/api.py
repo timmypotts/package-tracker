@@ -10,7 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, resources={"/api/*": {"origins": "*"}})
-port = 3080
+por
 if sys.argv.__len__() > 1:
     port = sys.argv[1]
 print("You said port is : {} ".format(port))

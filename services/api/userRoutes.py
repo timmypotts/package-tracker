@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 # CREATE A USER
 @app.route("/api/auth/register", methods=["POST"])
 def createUser():
+    print("HIT!")
     data = request.get_json(force=True)
 
     hashed_password = generate_password_hash(data["password"], method="sha256")
