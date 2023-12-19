@@ -1,0 +1,9 @@
+FROM nginx
+
+RUN curl -sOL https://github.com/jqlang/jq/releases/download/jq-1.6/jq-linux64 \ 
+  && chmod +x jq-linux64 \
+  && mv jq-linux64 /usr/local/bin/jq
+
+COPY config.sh /docker-entrypoint.d/config.sh
+
+COPY ./default.conf /etc/nginx/conf.d/default.conf

@@ -1,21 +1,26 @@
-from api import app
-from flask import Flask, request, jsonify, make_response
-from api import Package, User, db
+from flask import Blueprint, request, jsonify, make_response, current_app as app
+from models import Package, Users, db
 import jwt
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
 
 
+
+user_blueprint = Blueprint('user_blueprint', __name__)
+
+
+
 # CREATE A USER
-@app.route("/api/auth/register", methods=["POST"])
+@user_blueprint.route("/api/auth/register", methods=["POST"])
 def createUser():
+    print("HIT!")
     data = request.get_json(force=True)
 
     hashed_password = generate_password_hash(data["password"], method="sha256")
 
     try:
-        new_user = User(public_id=str(uuid.uuid4()), username=data["username"], email=data["email"], password=hashed_password, admin=False)
+        new_user = Users(public_id=str(uuid.uuid4()), username=data["username"], email=data["email"], password=hashed_password, admin=False)
         db.session.add(new_user)
         db.session.commit()
     except IntegrityError:
@@ -27,9 +32,8 @@ def createUser():
     return jsonify({"token" : token, "username" : new_user.username, "pub_id" : new_user.public_id})
 
 
-
 # USER LOGIN
-@app.route("/api/auth/login", methods=["POST"])
+@user_blueprint.route("/api/auth/login", methods=["POST"])
 def userLogin():
     data = request.get_json(force=True)
     print(data)
@@ -37,7 +41,7 @@ def userLogin():
     if not data:
         return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
 
-    user = User.query.filter_by(username=data["username"]).first()
+    user = Users.query.filter_by(username=data["username"]).first()
 
 # CHECK IF EXISTS
     if not user:
@@ -49,3 +53,11 @@ def userLogin():
         return jsonify({"token" : token, "username" : data["username"], "pub_id" : user.public_id})
 
     return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
+
+
+@user_blueprint.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response

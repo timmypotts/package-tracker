@@ -1,0 +1,52 @@
+version: "3"
+services:
+
+  nginx:
+    build:
+      context: ./services/nginx
+      dockerfile: Dockerfile.dev
+    ports:
+      - "127.0.0.1:9003:8000"
+    depends_on:
+      - web
+      - api
+  
+  web:
+    build:
+      context: ./services/web-react
+      dockerfile: Dockerfile.dev
+    volumes:
+      - "./services/web-react/app:/app"
+    environment:
+      - PORT=8080
+      - GOOGLE_MAPS_KEY=${GOOGLE_MAPS_KEY}
+
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:3005:3080"
+    volumes:
+      - ./services/api:/app
+      - ./keys/sa-key.json:/keys/sa-key.json:ro
+    environment:
+      PG_HOST: db
+      PG_PORT: "5432"
+      PG_USER: postgres
+      PG_PASSWORD: postgres
+      PG_SSLMODE: disable
+      POSTGRES_API_URL: postgresql://postgres:postgres@db:5432/postgres
+      SHIPENGINE_API_KEY: ${SHIPENGINE_API_KEY}
+  
+  db:
+    image: postgres:11.8
+    ports:
+      - "127.0.0.1:5455:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+

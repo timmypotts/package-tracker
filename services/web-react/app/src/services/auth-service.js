@@ -25,6 +25,8 @@ class AuthService {
   }
 
   register(username, email, password) {
+    console.log("API URL");
+    console.log(API_URL);
     return axios
       .post(API_URL + "/api/auth/register", {
         username,

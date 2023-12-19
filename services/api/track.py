@@ -23,5 +23,6 @@ def track(tracking, carrier):
 
     res = response.text.encode('utf8')
     json_obj = json.loads(res)
+    print("JSON OBJECT: \n")
     print(json_obj)
     return json_obj

@@ -1,13 +1,13 @@
-from api import app
-from flask import Flask, request, jsonify, make_response
-from api import Package, User, db
+from flask import Blueprint, request, jsonify, make_response
+from models import Package, Users, db
 from packageSort import packageSort
 from track import track
-import jwt
 from dotenv import load_dotenv
 
+package_blueprint = Blueprint('package_blueprint', __name__)
+
 # GET PACKAGES FOR USER
-@app.route("/api/packages/<public_id>", methods=["GET"])
+@package_blueprint.route("/api/packages/<public_id>", methods=["GET"])
 def getUserPackages(public_id):
 
     packages = Package.query.filter_by(user=public_id).all()
@@ -16,6 +16,7 @@ def getUserPackages(public_id):
         return make_response({"message" : "no packages found"})
 
     for package in packages:
+        # avoid making api call if package is delivered
         if package.statuscode == "DE":
             pass
         else:
@@ -27,6 +28,7 @@ def getUserPackages(public_id):
             package.statuscode = res["status_code"]
             package.carrierstatus = res["carrier_status_description"]
             package.exceptiondescription = res["exception_description"]
+            package.lat, package.lon = get_recent_lat_lon(res["events"])
             db.session.commit()
 
     raw = []
@@ -45,6 +47,8 @@ def getUserPackages(public_id):
         package_data["statuscode"] = package.statuscode
         package_data["carrierstatus"] = package.carrierstatus
         package_data["exceptiondescription"] = package.exceptiondescription
+        package_data["lat"] = package.lat
+        package_data["lon"] = package.lon
         raw.append(package_data)
     print(raw)
     output = packageSort(raw)
@@ -52,12 +56,8 @@ def getUserPackages(public_id):
     
     return jsonify({"packages" : output})
 
-    print(packages)
 
-    return jsonify({"packages" : packages}) 
-
-@app.route("/api/packages/", methods=["POST"])
-
+@package_blueprint.route("/api/packages/", methods=["POST"])
 def postPackage():
     data = request.get_json(force=True)
     print(data)
@@ -83,8 +83,15 @@ def postPackage():
     return jsonify({"message" : "added package"})
 
 # DELETE PACKAGE
-@app.route("/api/packages/<package_id>", methods=["DELETE"])
+@package_blueprint.route("/api/packages/<package_id>", methods=["DELETE"])
 def deletePackage(package_id):
     db.session.query(Package).filter(Package.id==package_id).delete()
     db.session.commit()
     return make_response("Package Deleted", 200)
+
+
+def get_recent_lat_lon(events):
+    for event in events:
+        if event['latitude'] is not None and event['longitude'] is not None:
+            return event['latitude'], event['longitude']
+    return None, None
