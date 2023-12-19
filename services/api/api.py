@@ -1,18 +1,15 @@
+import os
+import sys
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
-from models import Package, Users, db
-import os
-import sys
-from models import db
-from packageRoutes import package_blueprint
-from userRoutes import user_blueprint
-
+import sqlalchemy
+from models import db, Package, Users
+from package_routes import package_blueprint
+from user_routes import user_blueprint
 from dotenv import load_dotenv
 
 load_dotenv()
-db = SQLAlchemy()
-
 
 def create_app():
     app = Flask(__name__)
@@ -29,12 +26,15 @@ def create_app():
     db.init_app(app)
 
     # Create tables
-    with app.app_context():
-        db.create_all()
+    try:
+        with app.app_context():
+            db.create_all()
+    except sqlalchemy.exc.IntegrityError as e:
+        app.logger.error(f"Database Integrity Error: {e}")
+        # additional error handling as needed
 
     # Register routes
     app.register_blueprint(user_blueprint)
     app.register_blueprint(package_blueprint)
 
     return app
-

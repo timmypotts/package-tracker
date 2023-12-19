@@ -1,0 +1,3 @@
+# Package Tracker
+
+This is a simple package tracker that uses the ShipEngine API to track packages. It is built using React and Flask. I started this about three years ago, and just recently decided to finish it. The most recent feature I added was the google maps integration to show the location of the package instead of just a placeholder image. I also restructured the project to use docker-compose to make it easier to run locally, and set up a k8s cluster to host it.

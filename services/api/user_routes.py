@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, current_app as app
 from models import Package, Users, db
 import jwt
 import uuid
@@ -41,7 +41,7 @@ def userLogin():
     if not data:
         return make_response("Could not verify", 401, {"WWW-Authenticate" : 'Basic realm = "Login required!"'})
 
-    user = User.query.filter_by(username=data["username"]).first()
+    user = Users.query.filter_by(username=data["username"]).first()
 
 # CHECK IF EXISTS
     if not user:
