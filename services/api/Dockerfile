@@ -9,4 +9,4 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-CMD exec gunicorn --bind :3080 --workers=2 --threads=4 --timeout 0 run:app
+CMD python wait_for_db.py && gunicorn --bind :3080 --workers=2 --threads=4 --timeout 0 run:app
