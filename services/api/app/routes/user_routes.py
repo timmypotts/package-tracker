@@ -8,15 +8,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 user_router = APIRouter()
 
-# # Enable CORS for all routes
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
 # CREATE A USER
 @user_router.post("/api/auth/register", tags=["User"])
 async def create_user(data: dict = Body(...), db: Session = Depends(get_db)):

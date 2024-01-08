@@ -2,8 +2,7 @@ import os
 import sys
 from fastapi import FastAPI, HTTPException, Depends
 from app.database import engine, database
-from app.routes.users import user_router
-from app.routes.packages import package_router
+from app.routes import user_router, package_router
 from fastapi.middleware.cors import CORSMiddleware
 import sqlalchemy
 # from app.models import db, Package, User
