@@ -1,12 +1,29 @@
-FROM python:3.8-slim-buster
+# FROM python:3.8-slim-buster
+
+# WORKDIR /app
+# COPY . .
+
+# RUN apt-get update && \
+#     apt-get install -y gcc libpq-dev && \
+#     curl -sSL https://install.python-poetry.org | python3 - \
+#     poetry install --no-root \
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists/*
+
+# CMD ["poetry", "run", "python", "run.py"]
+
+
+# The builder image, used to build the virtual environment
+FROM python:3.11-buster as builder
+
+RUN pip install poetry==1.4.2
 
 WORKDIR /app
+
+COPY pyproject.toml poetry.lock ./
 COPY . .
+RUN touch README.md
 
-RUN apt-get update && \
-    apt-get install -y gcc libpq-dev && \
-    pip3 install -r requirements.txt && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN poetry install --without dev
 
-CMD python wait_for_db.py && gunicorn --bind :3080 --workers=2 --threads=4 --timeout 0 run:app
+ENTRYPOINT ["poetry", "run", "python", "-m", "run"]
