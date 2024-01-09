@@ -12,6 +12,7 @@ import os
 
 # Pydantic models for request bodies
 class UserCreate(BaseModel):
+    username: str
     email: str
     password: str
 

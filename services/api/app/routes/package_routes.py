@@ -2,9 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
 from app.models import Package
 from app.database import get_db
+
 from pydantic import BaseModel
 
 package_router = APIRouter()
+
+# Pydantic models for request bodies
+class PackageCreate(BaseModel):
+    pubId: str
+    item: str
+    courier: str
+    tracking: str
 
 # Pydantic models for request bodies
 class PackageCreate(BaseModel):
