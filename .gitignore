@@ -13,7 +13,10 @@ client/yarn-debug.log*
 client/yarn-error.log*
 scratch.json
 
+__pycache__/
 */__pycache__/*
+*.pyc
+*.pyo
 
 client/npm-debug.log*
 
