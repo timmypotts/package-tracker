@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, Body, APIRouter
 from sqlalchemy.orm import Session
-from services.api.app.models import Package, db
-from services.api.app.packageSort import packageSort
-from services.api.app.outgoing.track import track
+from app.models import Package, db
+from app.packageSort import packageSort
+from app.outgoing.track import track
 
 package_routes = APIRouter()
 
