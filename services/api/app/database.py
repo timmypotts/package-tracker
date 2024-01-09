@@ -12,3 +12,10 @@ Base: DeclarativeMeta = declarative_base()
 
 # Create the database instance
 database = Database(DATABASE_URL)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

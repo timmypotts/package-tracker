@@ -1,64 +1,39 @@
-import os
-import sys
-from fastapi import FastAPI, HTTPException, Depends
-from app.database import engine, database
-from app.routes import user_router, package_router
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-import sqlalchemy
-# from app.models import db, Package, User
-# from app.routes.packageRoutes import package_router  
-# from app.routes.userRoutes import user_router  
-from dotenv import load_dotenv
 
-load_dotenv()
+from app.database import engine, Base, database, get_db
+from app.routes.package_routes import package_router
+from app.routes.user_routes import user_router
 
-# Dependency to get the database session
-def get_db():
-    db = database
-    try:
-        yield db
-    finally:
-        db.disconnect()
+# Initialize FastAPI app
+app = FastAPI()
 
-# Dependency to get the database engine
-def get_engine():
-    return engine
+# CORS settings
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Dependency to get the database instance
-def get_database():
-    return database
-
-def create_app():
-    # FastAPI app
-    app = FastAPI()
-    
-    # CORS settings
-    origins = ["*"]
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    
-    # Load configurations and initialize SQLAlchemy
-    app.config["SECRET_KEY"] = "thisissecret"
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_API_URL")
-    app.config['CORS_HEADERS'] = 'Content-Type'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    print("Connecting to database", app.config["SQLALCHEMY_DATABASE_URI"])
-
+# Event handler to create tables and connect to the database on startup
+@app.on_event("startup")
+async def startup():
     # Create tables
-    try:
-        with app.app_context():
-            db.create_all()
-    except sqlalchemy.exc.IntegrityError as e:
-        app.logger.error(f"Database Integrity Error: {e}")
+    Base.metadata.create_all(bind=engine)
+    print("STARTING UP")
+    # Connect to the database
+    await database.connect()
 
-    # Include routers
-    app.include_router(user_router, prefix="/api")
-    app.include_router(package_router, prefix="/api")
+# Event handler to disconnect from the database on shutdown
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
 
-    return app
+# Include your routers here
+app.include_router(user_router, prefix="/api", dependencies=[Depends(get_db)])
+app.include_router(package_router, prefix="/api", dependencies=[Depends(get_db)])
+
+# Additional code (such as endpoint definitions) goes here

@@ -1,10 +1,17 @@
-from fastapi import FastAPI, Depends, HTTPException, Body, APIRouter
+from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
-from services.api.app.models import Package, db
-from services.api.app.packageSort import packageSort
-from services.api.app.outgoing.track import track
+from app.models import Package
+from app.database import get_db
+from pydantic import BaseModel
 
-package_routes = APIRouter()
+package_router = APIRouter()
+
+# Pydantic models for request bodies
+class PackageCreate(BaseModel):
+    pubId: str
+    item: str
+    courier: str
+    tracking: str
 
 # Dependency to get the database session
 def get_db():
@@ -15,7 +22,7 @@ def get_db():
         db.close()
 
 # GET PACKAGES FOR USER
-@package_routes.get("/api/packages/{public_id}", tags=["Packages"])
+@package_router.get("/api/packages/{public_id}", tags=["Packages"])
 def get_user_packages(public_id: str, db: Session = Depends(get_db)) -> dict:
     packages = db.query(Package).filter_by(user=public_id).all()
 
@@ -65,9 +72,8 @@ def get_user_packages(public_id: str, db: Session = Depends(get_db)) -> dict:
 
 
 # POST PACKAGE
-@package_routes.post("/api/packages/", tags=['Packages'])
-def post_package(data: dict = Body(...)):
-
+@package_router.post("/api/packages/", tags=['Packages'])
+def post_package(package_data: PackageCreate, db_session: Session = Depends(get_db)):
     try:
         res = track(data["tracking"], data["courier"])
     except Exception as e:
@@ -95,20 +101,20 @@ def post_package(data: dict = Body(...)):
         exceptiondescription=exception_description
     )
 
-    db.add(new_package)
-    db.commit()
+    db_session.add(new_package)
+    db_session.commit()
 
     return {"message": "Added package"}
 
 # DELETE PACKAGE
-@package_routes.delete("/api/packages/{package_id}", tags=['Packages'])
-def delete_package(package_id: str, db: Session = Depends(get_db)):
+@package_router.delete("/api/packages/{package_id}", tags=['Packages'])
+def delete_package(package_id: str, db_session: Session = Depends(get_db)):
+    package = db_session.query(Package).filter(Package.id == package_id).first()
+    if package is None:
+        raise HTTPException(status_code=404, detail="Package not found")
 
-    try:
-        db.query(Package).filter(Package.id == package_id).delete()
-        db.commit()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete package: {str(e)}")
+    db_session.delete(package)
+    db_session.commit()
 
     return {"message": "Package Deleted"}
 
