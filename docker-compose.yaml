@@ -40,6 +40,7 @@ services:
       PG_SSLMODE: disable
       POSTGRES_API_URL: postgresql://postgres:postgres@db:5432/postgres
       SHIPENGINE_API_KEY: ${SHIPENGINE_API_KEY}
+      SECRET_KEY: ${SECRET_KEY}
   
   db:
     image: postgres:11.8

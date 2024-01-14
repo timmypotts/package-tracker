@@ -35,7 +35,7 @@ class User(Base):
     public_id = Column(String(50), unique=True)
     username = Column(String(20), unique=True, nullable=False)
     email = Column(String(120), unique=True, nullable=False)
-    password = Column(String(100), nullable=False)
+    password = Column(String(255), nullable=False) 
     admin = Column(Boolean)
 
     def __repr__(self):

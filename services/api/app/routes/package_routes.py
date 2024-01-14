@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
 from app.models import Package
 from app.database import get_db
+from app.outgoing.track import track
 
 from pydantic import BaseModel
 
@@ -14,20 +15,42 @@ class PackageCreate(BaseModel):
     courier: str
     tracking: str
 
-# Pydantic models for request bodies
-class PackageCreate(BaseModel):
-    pubId: str
-    item: str
-    courier: str
-    tracking: str
 
-# Dependency to get the database session
-def get_db():
-    db = Session()
+# POST PACKAGE
+@package_router.post("/api/packages/", tags=['Packages'])
+def post_package(package_data: PackageCreate, db_session: Session = Depends(get_db)):
     try:
-        yield db
-    finally:
-        db.close()
+        res = track(data["tracking"], data["courier"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to track package: {str(e)}")
+
+    order_status = res["status_description"]
+    expected_delivery = res["estimated_delivery_date"]
+    ship_date = res["ship_date"]
+    delivery_date = res["actual_delivery_date"]
+    status_code = res["status_code"]
+    carrier_status = res["carrier_status_description"]
+    exception_description = res["exception_description"]
+
+    new_package = Package(
+        user=data["pubId"],
+        item=data["item"],
+        courier=data["courier"],
+        tracking=data["tracking"],
+        status=order_status,
+        shipdate=ship_date,
+        deliverdate=delivery_date,
+        expected=expected_delivery,
+        statuscode=status_code,
+        carrierstatus=carrier_status,
+        exceptiondescription=exception_description
+    )
+
+    db_session.add(new_package)
+    db_session.commit()
+
+    return {"message": "Added package"}
+
 
 # GET PACKAGES FOR USER
 @package_router.get("/api/packages/{public_id}", tags=["Packages"])
@@ -77,42 +100,6 @@ def get_user_packages(public_id: str, db: Session = Depends(get_db)) -> dict:
     output = packageSort(raw)
 
     return {"packages": output}
-
-
-# POST PACKAGE
-@package_router.post("/api/packages/", tags=['Packages'])
-def post_package(package_data: PackageCreate, db_session: Session = Depends(get_db)):
-    try:
-        res = track(data["tracking"], data["courier"])
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to track package: {str(e)}")
-
-    order_status = res["status_description"]
-    expected_delivery = res["estimated_delivery_date"]
-    ship_date = res["ship_date"]
-    delivery_date = res["actual_delivery_date"]
-    status_code = res["status_code"]
-    carrier_status = res["carrier_status_description"]
-    exception_description = res["exception_description"]
-
-    new_package = Package(
-        user=data["pubId"],
-        item=data["item"],
-        courier=data["courier"],
-        tracking=data["tracking"],
-        status=order_status,
-        shipdate=ship_date,
-        deliverdate=delivery_date,
-        expected=expected_delivery,
-        statuscode=status_code,
-        carrierstatus=carrier_status,
-        exceptiondescription=exception_description
-    )
-
-    db_session.add(new_package)
-    db_session.commit()
-
-    return {"message": "Added package"}
 
 # DELETE PACKAGE
 @package_router.delete("/api/packages/{package_id}", tags=['Packages'])

@@ -17,13 +17,13 @@ class UserCreate(BaseModel):
     password: str
 
 class UserLogin(BaseModel):
-    email: str
+    username: str
     password: str
 
 user_router = APIRouter()
 
 # Route for creating a user
-@user_router.post("/api/auth/register", tags=["User"])
+@user_router.post("/auth/register", tags=["User"])
 async def create_user(user_data: UserCreate, db_session: Session = Depends(get_db)):
     # Check if the user already exists
     print("CREATING USER")
@@ -31,7 +31,7 @@ async def create_user(user_data: UserCreate, db_session: Session = Depends(get_d
     if existing_user:
         raise HTTPException(status_code=400, detail="Username or email already in use")
 
-    hashed_password = generate_password_hash(user_data.password, method="sha256")
+    hashed_password = generate_password_hash(user_data.password, method='pbkdf2:sha256')
     new_user = User(
         public_id=str(uuid.uuid4()),
         username=user_data.username,
@@ -46,6 +46,9 @@ async def create_user(user_data: UserCreate, db_session: Session = Depends(get_d
         db_session.rollback()
         raise HTTPException(status_code=409, detail="User already exists")
     
+    secret_key = os.environ.get('SECRET_KEY')
+    if not secret_key:
+        raise ValueError("Secret key not found")
     # Create a token for the new user
     token = jwt.encode(
         {"public_id": new_user.public_id, "username": new_user.username},
@@ -55,7 +58,7 @@ async def create_user(user_data: UserCreate, db_session: Session = Depends(get_d
     return {"token": token, "username": new_user.username, "public_id": new_user.public_id}
 
 # Route for logging in a user
-@user_router.post("/api/auth/login", tags=["User"])
+@user_router.post("/auth/login", tags=["User"])
 async def user_login(login_data: UserLogin, db_session: Session = Depends(get_db)):
     user = db_session.query(User).filter(User.username == login_data.username).first()
     if user and check_password_hash(user.password, login_data.password):
@@ -71,3 +74,5 @@ async def user_login(login_data: UserLogin, db_session: Session = Depends(get_db
             detail='Could not verify credentials',
             headers={"WWW-Authenticate": 'Bearer'},
         )
+
+
