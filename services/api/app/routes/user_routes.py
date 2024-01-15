@@ -1,8 +1,8 @@
-from fastapi import HTTPException, Depends, APIRouter
+from fastapi import HTTPException, Depends, APIRouter, Response
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from app.database import get_db
 from app.models import User
 import jwt
@@ -13,7 +13,7 @@ import os
 # Pydantic models for request bodies
 class UserCreate(BaseModel):
     username: str
-    email: str
+    email: EmailStr
     password: str
 
 class UserLogin(BaseModel):
@@ -24,12 +24,17 @@ user_router = APIRouter()
 
 # Route for creating a user
 @user_router.post("/auth/register", tags=["User"])
-async def create_user(user_data: UserCreate, db_session: Session = Depends(get_db)):
+async def create_user(user_data: UserCreate, response: Response, db_session: Session = Depends(get_db)):
+    # Check if the request body is valid
+    if user_data.username is None or user_data.password is None:
+        raise HTTPException(status_code=400, detail="Username and password are required")
+
     # Check if the user already exists
-    print("CREATING USER")
     existing_user = db_session.query(User).filter((User.username == user_data.username) | (User.email == user_data.email)).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Username or email already in use")
+    if existing_user.username == user_data.username:
+        raise HTTPException(status_code=400, detail="username already in use")
+    if existing_user.email == user_data.email:
+        raise HTTPException(status_code=400, detail="email already in use")
 
     hashed_password = generate_password_hash(user_data.password, method='pbkdf2:sha256')
     new_user = User(
@@ -44,7 +49,7 @@ async def create_user(user_data: UserCreate, db_session: Session = Depends(get_d
         db_session.commit()
     except IntegrityError:
         db_session.rollback()
-        raise HTTPException(status_code=409, detail="User already exists")
+        raise HTTPException(status_code=500, detail="cannot create user")
     
     secret_key = os.environ.get('SECRET_KEY')
     if not secret_key:
@@ -55,11 +60,14 @@ async def create_user(user_data: UserCreate, db_session: Session = Depends(get_d
         os.environ.get('SECRET_KEY'),  # Use the secret key from environment variables
         algorithm="HS256"
     )
-    return {"token": token, "username": new_user.username, "public_id": new_user.public_id}
+
+    # write jwt token to response header
+    response.headers["Authorization"] = f"Bearer {token}"
+    return {"username": new_user.username, "public_id": new_user.public_id}
 
 # Route for logging in a user
 @user_router.post("/auth/login", tags=["User"])
-async def user_login(login_data: UserLogin, db_session: Session = Depends(get_db)):
+async def user_login(login_data: UserLogin, response: Response, db_session: Session = Depends(get_db)):
     user = db_session.query(User).filter(User.username == login_data.username).first()
     if user and check_password_hash(user.password, login_data.password):
         token = jwt.encode(
@@ -67,7 +75,10 @@ async def user_login(login_data: UserLogin, db_session: Session = Depends(get_db
             os.environ.get('SECRET_KEY'),  # Use the secret key from environment variables
             algorithm="HS256"
         )
-        return {"token": token, "username": user.username, "public_id": user.public_id}
+
+        # write jwt token to response header
+        response.headers["Authorization"] = f"Bearer {token}"
+        return {"username": user.username, "public_id": user.public_id}
     else:
         raise HTTPException(
             status_code=401,
